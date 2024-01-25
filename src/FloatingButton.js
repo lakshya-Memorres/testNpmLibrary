@@ -88,7 +88,7 @@ const FloatingButton = ({onPressCamera, useMyContext, primaryColor, secondaryCol
       fontSize: 14,
     },
     countText: {
-      color: '#242424',
+      color: secondaryColor,
       fontSize: 20,
     },
     iconStyle: {
@@ -119,7 +119,6 @@ const FloatingButton = ({onPressCamera, useMyContext, primaryColor, secondaryCol
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      // marginTop: 22,
     },
     modalView: {
       margin: 20,
