@@ -1,5 +1,12 @@
 import { AppRegistry } from 'react-native';
 import App from './src/App';
 import { name as appName } from './app.json';
+import {MyProvider} from './src/context/MyContext';
 
-AppRegistry.registerComponent(appName, () => App);
+const Main = () => (
+    <MyProvider>
+      <App />
+    </MyProvider>
+  );
+
+AppRegistry.registerComponent(appName, () => Main);
