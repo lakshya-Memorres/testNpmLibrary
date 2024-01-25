@@ -18,5 +18,4 @@ export const icon = {
   stop: stop,
   cancel: cancel,
   recording: recording,
-  morning: morning,
 };
