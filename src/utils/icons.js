@@ -8,7 +8,6 @@ export const pause = require('../Icons/pause.png');
 export const stop = require('../Icons/stop.png');
 export const cancel = require('../Icons/cancel.png');
 export const recording = require('../Icons/rec1.gif');
-export const morning = require('../Icons/morning.gif');
 
 export const icon = {
   plus: plus,

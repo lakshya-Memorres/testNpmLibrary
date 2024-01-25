@@ -13,7 +13,7 @@ import {
   Modal,
   TextInput
 } from 'react-native';
-import {color, icon} from './utils';
+import {icon} from './utils';
 import {Platform} from 'react-native';
 // import {useMyContext} from './context/MyContext';
 import AnimatedLoader from './AnimatedLoader';
@@ -23,7 +23,164 @@ const recordScreenEvents = new NativeEventEmitter(RecordScreen);
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-const FloatingButton = ({onPressCamera, useMyContext}) => {
+const FloatingButton = ({onPressCamera, useMyContext, primaryColor, secondaryColor}) => {
+  const styles = StyleSheet.create({
+    container: {
+      position: 'absolute',
+       zIndex: 1,
+      bottom: 16,
+      right: 16,
+    },
+    mainButton: {
+      backgroundColor: primaryColor,
+      borderRadius: 27,
+      width: 54,
+      height: 54,
+      justifyContent: 'center',
+      alignItems: 'center',
+      elevation: 5,
+      zIndex: 99999,
+    },
+    screenshotCountBtn: {
+      backgroundColor: primaryColor,
+      borderRadius: 27,
+      width: 54,
+      height: 54,
+      justifyContent: 'center',
+      alignItems: 'center',
+      elevation: 5,
+      zIndex: 99999,
+      position: 'absolute',
+      bottom: 210,
+      right: 16,
+    },
+    subButtonContainer: {
+      position: 'absolute',
+      bottom: 54,
+    },
+    subButton: {
+      backgroundColor: primaryColor,
+      borderRadius: 27,
+      width: 54,
+      height: 54,
+      justifyContent: 'center',
+      alignItems: 'center',
+      elevation: 2,
+      marginBottom: 10,
+    },
+    playPauseContainer: {
+      position: 'absolute',
+      bottom: 10,
+      right: 0,
+      backgroundColor: primaryColor,
+      borderRadius: 27,
+    },
+    playPauseButton: {
+      backgroundColor: primaryColor,
+      borderRadius: 20,
+      width: 40,
+      height: 40,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    buttonText: {
+      color: 'white',
+      fontSize: 14,
+    },
+    countText: {
+      color: '#242424',
+      fontSize: 20,
+    },
+    iconStyle: {
+      height: 25,
+      width: 25,
+      tintColor: secondaryColor,
+    },
+    recIconStyle: {
+      height: 22,
+      width: 22,
+      tintColor: secondaryColor,
+    },
+    smallIconStyle: {
+      height: 20,
+      width: 20,
+      tintColor: secondaryColor,
+    },
+    smallIconIosStyle: {
+      height: 20,
+      width: 20,
+    },
+    cancelIconStyle: {
+      height: 12,
+      width: 12,
+      tintColor: secondaryColor
+    },
+    centeredView: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      // marginTop: 22,
+    },
+    modalView: {
+      margin: 20,
+      backgroundColor: 'white',
+      borderRadius: 20,
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+      width: '90%',
+    },
+    button: {
+      borderRadius: 20,
+      padding: 10,
+      elevation: 2,
+    },
+    buttonOpen: {
+      backgroundColor: '#F194FF',
+    },
+    buttonClose: {
+      backgroundColor: primaryColor,
+      width: '100%',
+    },
+    textStyle: {
+      color: secondaryColor,
+      fontWeight: 'bold',
+      textAlign: 'center',
+      padding: 2,
+    },
+    modalTextInput: {
+      borderWidth: 1,
+      width: '100%',
+      height: 150,
+      borderRadius: 15,
+      textAlignVertical: 'top',
+      paddingHorizontal: 10,
+      fontSize: 16,
+      borderWidth: 1,
+      borderColor: 'rgba(211, 211, 211, 0.6)',
+      marginBottom: 15
+    },
+    cancelModalBtn: {
+      position: 'absolute', 
+      height: 30, 
+      width: 30, 
+      borderRadius: 15, 
+      backgroundColor: primaryColor,
+      justifyContent: 'center',
+      alignItems: 'center',
+      top: -13,
+      right: -13
+  }
+  });
+
   const {startRecording, startRecordingMethod, isPaused, pauseRecordingMethod} =
     useMyContext();
   const [showButtons, setShowButtons] = useState(false);
@@ -360,7 +517,7 @@ const FloatingButton = ({onPressCamera, useMyContext}) => {
             </TouchableOpacity>
           <TextInput style={styles.modalTextInput} 
           placeholder='Enter your feedback'
-          placeholderTextColor={color.lightGray}
+          placeholderTextColor={'#929292'}
           multiline={true}
           />
           <TouchableOpacity
@@ -379,7 +536,7 @@ const FloatingButton = ({onPressCamera, useMyContext}) => {
   return (
     <View>
       {showMainButton ? (
-          <AnimatedLoader />
+          <AnimatedLoader primaryColor={primaryColor}/>
       ) : (
         <View>
         {modalVisible && renderFeedbackPopup()}
@@ -416,201 +573,7 @@ const FloatingButton = ({onPressCamera, useMyContext}) => {
       )}
     </View>
   );
+  
 };
-
-const styles = StyleSheet.create({
-  loaderContainer: {
-    position: 'absolute',
-    bottom: SCREEN_HEIGHT / 2.5,
-    right: 0,
-    left: 0,
-  },
-  previewContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 10,
-    backgroundColor: '#000',
-  },
-  previewImage: {width: 200, height: 200, backgroundColor: '#fff'},
-
-  timerContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-    backgroundColor: 'red',
-  },
-  innerTimerContainer: {
-    borderWidth: 10,
-    borderColor: color.white,
-    borderRadius: 75,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 150,
-    height: 150,
-  },
-  timerText: {
-    color: color.white,
-    fontSize: 48,
-  },
-  container: {
-    position: 'absolute',
-     zIndex: 1,
-    bottom: 16,
-    right: 16,
-  },
-  mainButton: {
-    backgroundColor: color.secondaryYellow,
-    borderRadius: 27,
-    width: 54,
-    height: 54,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 5,
-    zIndex: 99999,
-  },
-  screenshotCountBtn: {
-    backgroundColor: color.secondaryYellow,
-    borderRadius: 27,
-    width: 54,
-    height: 54,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 5,
-    zIndex: 99999,
-    position: 'absolute',
-    bottom: 210,
-    right: 16,
-  },
-  subButtonContainer: {
-    position: 'absolute',
-    bottom: 54,
-  },
-  subButton: {
-    backgroundColor: color.secondaryYellow,
-    borderRadius: 27,
-    width: 54,
-    height: 54,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 2,
-    marginBottom: 10,
-  },
-  playPauseContainer: {
-    position: 'absolute',
-    bottom: 10,
-    right: 0,
-    backgroundColor: color.secondaryYellow,
-    borderRadius: 27,
-  },
-  playPauseButton: {
-    backgroundColor: color.secondaryYellow,
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 14,
-  },
-  countText: {
-    color: color.primaryText,
-    fontSize: 20,
-  },
-  iconStyle: {
-    height: 25,
-    width: 25,
-    tintColor: color.primaryGray,
-  },
-  recIconStyle: {
-    height: 22,
-    width: 22,
-    tintColor: color.primaryGray,
-  },
-  smallIconStyle: {
-    height: 20,
-    width: 20,
-    tintColor: color.primaryGray,
-  },
-  smallIconIosStyle: {
-    height: 20,
-    width: 20,
-  },
-  cancelIconStyle: {
-    height: 12,
-    width: 12,
-    tintColor: color.primaryGray
-  },
-
-
-
-
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    // marginTop: 22,
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    width: '90%',
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: '#F194FF',
-  },
-  buttonClose: {
-    backgroundColor: color.secondaryYellow,
-    width: '100%',
-  },
-  textStyle: {
-    color: color.primaryGray,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    padding: 2,
-  },
-  modalTextInput: {
-    borderWidth: 1,
-    width: '100%',
-    height: 150,
-    borderRadius: 15,
-    textAlignVertical: 'top',
-    paddingHorizontal: 10,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(211, 211, 211, 0.6)',
-    marginBottom: 15
-  },
-  cancelModalBtn: {
-    position: 'absolute', 
-    height: 30, 
-    width: 30, 
-    borderRadius: 15, 
-    backgroundColor: color.secondaryYellow,
-    justifyContent: 'center',
-    alignItems: 'center',
-    top: -13,
-    right: -13
-}
-});
 
 export default FloatingButton;

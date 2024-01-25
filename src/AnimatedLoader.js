@@ -4,7 +4,49 @@ import {View, Animated, Easing, Text, StyleSheet, Dimensions} from 'react-native
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-const AnimatedLoader = () => {
+const AnimatedLoader = ({primaryColor}) => {
+  const styles = StyleSheet.create({
+    container: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'absolute',
+      bottom: 0,
+      right: 0,
+      left: 0,
+      top: -SCREEN_HEIGHT,
+      backgroundColor:  'rgba(255, 255, 255, 0.5)',  
+      zIndex: 999,
+    },
+  
+    loader: {
+      width: 120,
+      height: 120,
+      borderRadius: 60,
+      borderWidth: 10,
+      borderTopColor: primaryColor,
+      borderRightColor: primaryColor,
+      borderTopWidth: 10,
+      borderRightWidth: 10,
+      borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+      borderLeftColor: 'rgba(255, 255, 255, 0.1)',
+      borderBottomWidth: 10,
+      borderLeftWidth: 10,
+      zIndex: 9999,
+    },
+    textContainer: {
+      borderColor: 'white',
+      position: 'absolute',
+      height: '100%',
+      width: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    timerText: {
+      fontSize: 48,
+      fontWeight: 'bold'
+    },
+  });
+  
   const rotation = useRef(new Animated.Value(0)).current;
   const [countdown, setCountdown] = useState(3);
 
@@ -54,47 +96,5 @@ const AnimatedLoader = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    left: 0,
-    top: -SCREEN_HEIGHT,
-    backgroundColor:  'rgba(255, 255, 255, 0.5)',  
-    zIndex: 999,
-  },
-
-  loader: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    borderWidth: 10,
-    borderTopColor: '#FBDD24',
-    borderRightColor: '#FBDD24',
-    borderTopWidth: 10,
-    borderRightWidth: 10,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-    borderLeftColor: 'rgba(255, 255, 255, 0.1)',
-    borderBottomWidth: 10,
-    borderLeftWidth: 10,
-    zIndex: 9999,
-  },
-  textContainer: {
-    borderColor: 'white',
-    position: 'absolute',
-    height: '100%',
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  timerText: {
-    fontSize: 48,
-    fontWeight: 'bold'
-  },
-});
 
 export default AnimatedLoader;
