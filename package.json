@@ -4,7 +4,6 @@
   "description": "Reusable component for feedback functionality",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
-  "types": "lib/typescript/src/index.d.ts",
   "react-native": "src/index",
   "source": "src/index",
   "files": [
