@@ -143,9 +143,6 @@ const FloatingButton = ({onPressCamera, useMyContext, primaryColor, secondaryCol
       padding: 10,
       elevation: 2,
     },
-    buttonOpen: {
-      backgroundColor: '#F194FF',
-    },
     buttonClose: {
       backgroundColor: primaryColor,
       width: '100%',
