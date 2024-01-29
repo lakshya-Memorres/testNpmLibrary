@@ -11,7 +11,8 @@ import {
   Dimensions,
   Text,
   Modal,
-  TextInput
+  TextInput,
+  KeyboardAvoidingView
 } from 'react-native';
 import {icon} from './utils';
 import {Platform} from 'react-native';
@@ -330,7 +331,7 @@ const FloatingButton = ({onPressCamera, useMyContext, primaryColor, secondaryCol
     const config = {
       width: 720,
       height: 1280,
-      mic: false,
+      mic: Platform.OS === 'ios' ? true : false,
       fps: 60,
       bitrate: 1920 * 1080 * 144,
     };
@@ -503,7 +504,7 @@ const FloatingButton = ({onPressCamera, useMyContext, primaryColor, secondaryCol
       onRequestClose={() => {
         setModalVisible(false);
       }}>
-      <View style={styles.centeredView}>
+      <KeyboardAvoidingView behavior= {Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.centeredView}>
         <View style={styles.modalView}>
         <Text style={{fontSize: 20, paddingBottom: 10}}>Feedback</Text>
           <TouchableOpacity 
@@ -523,7 +524,7 @@ const FloatingButton = ({onPressCamera, useMyContext, primaryColor, secondaryCol
               <Text style={styles.textStyle}>Submit</Text>
             </TouchableOpacity>
         </View>
-      </View>
+        </KeyboardAvoidingView>
     </Modal>
     </View>
     )

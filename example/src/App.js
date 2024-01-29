@@ -27,7 +27,10 @@ export default function App() {
           <Text>Home Page</Text>
         </View> */}
       </ViewShot>
-      <FloatingButton useMyContext={useMyContext} onPressCamera={captureScreenshot} />
+      <FloatingButton useMyContext={useMyContext} onPressCamera={captureScreenshot} 
+      primaryColor = {'#FBDD24'}
+      secondaryColor = {'#3F3F3F'}
+      />
     </MyProvider>
   );
 }
