@@ -148,10 +148,10 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
       overflow: 'hidden',
     },
     thumbnailStyle: {
-      height: 150, 
-      width: SCREEN_WIDTH / 3.9, 
-      margin: 2, 
-      justifyContent: 'center', 
+      height: 150,
+      width: SCREEN_WIDTH / 3.9,
+      margin: 2,
+      justifyContent: 'center',
       alignItems: 'center'
     },
     centeredView: {
