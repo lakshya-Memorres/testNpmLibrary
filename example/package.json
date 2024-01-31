@@ -12,6 +12,8 @@
   "dependencies": {
     "react": "18.2.0",
     "react-native": "0.73.2",
+    "react-native-create-thumbnail": "^2.0.0",
+    "react-native-sound": "^0.11.2",
     "react-native-view-shot": "^3.8.0"
   },
   "devDependencies": {

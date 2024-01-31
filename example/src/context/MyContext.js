@@ -6,7 +6,7 @@ const MyContext = createContext();
 export const MyProvider = ({children}) => {
   const [startRecording, setStartRecording] = useState(false);
   const [isPaused, setPaused] = useState(false);
-  const [screenshotUri, setScreenshotUri] = useState('');
+  const [screenshotUri, setScreenshotUri] = useState();
 
   const startRecordingMethod = state => {
     setStartRecording(state);
@@ -17,6 +17,7 @@ export const MyProvider = ({children}) => {
   };
 
   const screenshotMethod = uri => {
+    console.log('my context value ==>>', uri);
     setScreenshotUri(uri);
   };
 
