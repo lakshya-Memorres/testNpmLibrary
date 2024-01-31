@@ -74,6 +74,7 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
       justifyContent: 'center',
       alignItems: 'center',
       marginBottom: 10,
+      elevation: 5,
     },
     playPauseContainer: {
       position: 'absolute',
@@ -144,8 +145,14 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
       alignItems: 'center',
     },
     thumbnailContainer: {
-      borderRadius: 15,
       overflow: 'hidden',
+    },
+    thumbnailStyle: {
+      height: 150, 
+      width: SCREEN_WIDTH / 3.9, 
+      margin: 2, 
+      justifyContent: 'center', 
+      alignItems: 'center'
     },
     centeredView: {
       flex: 1,
@@ -173,9 +180,10 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
       flex: 1
     },
     button: {
-      borderRadius: 20,
-      padding: 10,
+      borderRadius: 7,
+      padding: 14,
       elevation: 2,
+      marginBottom: 10
     },
     buttonClose: {
       backgroundColor: primaryColor,
@@ -185,7 +193,14 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
       color: secondaryColor,
       fontWeight: 'bold',
       textAlign: 'center',
-      padding: 2,
+      fontSize: 15
+    },
+    headerTextStyle: {
+      color: secondaryColor,
+      fontWeight: 'bold',
+      textAlign: 'center',
+      fontSize: 20,
+      paddingBottom: 10
     },
     modalTextInput: {
       borderWidth: 1,
@@ -197,6 +212,7 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
       fontSize: 16,
       borderWidth: 1,
       borderColor: 'rgba(211, 211, 211, 0.9)',
+      // borderColor: secondaryColor,
       marginBottom: 15
     },
     cancelModalBtn: {
@@ -628,7 +644,7 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
           }}>
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Text style={{ fontSize: 20, paddingBottom: 10 }}>Feedback</Text>
+              <Text style={styles.headerTextStyle}>Feedback</Text>
               <TouchableOpacity
                 activeOpacity={1}
                 style={styles.cancelModalBtn} onPress={() => handleCloseFeedbackPopup()}>
@@ -650,7 +666,7 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
                         style={styles.thumbnailContainer}
                       >
                         <ImageBackground
-                          style={{ height: 150, width: SCREEN_WIDTH / 3.9, margin: 2, justifyContent: 'center', alignItems: 'center' }}
+                          style={styles.thumbnailStyle}
                           source={{
                             uri: item
                           }} >
