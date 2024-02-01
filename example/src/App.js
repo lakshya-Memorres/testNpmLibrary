@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import FloatingButton from 'react-native-record-screen';
-import ViewShot, { captureRef } from 'react-native-view-shot';
+import ViewShot from 'react-native-view-shot';
 import { MyProvider, useMyContext } from './context/MyContext';
 
 
