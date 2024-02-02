@@ -14,7 +14,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   FlatList,
-  ImageBackground
+  ImageBackground,
 } from 'react-native';
 import { icon } from './utils';
 import { Platform } from 'react-native';
@@ -28,7 +28,12 @@ const recordScreenEvents = new NativeEventEmitter(RecordScreen);
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
-const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColor }) => {
+const FloatingButton = ({
+  viewShotRef,
+  useMyContext,
+  primaryColor,
+  secondaryColor,
+}) => {
   const styles = StyleSheet.create({
     container: {
       position: 'absolute',
@@ -44,6 +49,10 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
       justifyContent: 'center',
       alignItems: 'center',
       elevation: 5,
+      shadowColor: '#000',
+      shadowOffset: { width: 1, height: 1 },
+      shadowOpacity: 0.25,
+      shadowRadius: 3,
       zIndex: 99999,
     },
     screenshotCountBtn: {
@@ -57,8 +66,8 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
       position: 'absolute',
       bottom: 47,
       right: -5,
-      borderWidth: .7,
-      borderColor: 'white'
+      borderWidth: 0.7,
+      borderColor: 'white',
     },
     subButtonContainer: {
       position: 'absolute',
@@ -73,6 +82,10 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
       alignItems: 'center',
       marginBottom: 10,
       elevation: 5,
+      shadowColor: '#000',
+      shadowOffset: { width: 1, height: 1 },
+      shadowOpacity: 0.25,
+      shadowRadius: 3,
     },
     playPauseContainer: {
       position: 'absolute',
@@ -119,7 +132,7 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
     cancelIconStyle: {
       height: 12,
       width: 12,
-      tintColor: secondaryColor
+      tintColor: secondaryColor,
     },
     delThumbnailView: {
       tintColor: secondaryColor,
@@ -150,7 +163,7 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
       width: SCREEN_WIDTH / 3.9,
       margin: 2,
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
     },
     centeredView: {
       flex: 1,
@@ -158,7 +171,7 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
     thumbnailView: {
       flex: 1,
       marginBottom: 10,
-      alignSelf: 'flex-start'
+      alignSelf: 'flex-start',
     },
     modalView: {
       margin: 20,
@@ -168,20 +181,21 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
       paddingHorizontal: 20,
       alignItems: 'center',
       shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
+      shadowOffset: { width: 1, height: 1 },
       shadowOpacity: 0.25,
-      shadowRadius: 4,
+      shadowRadius: 3,
       elevation: 5,
-      flex: 1
+      flex: 1,
     },
     button: {
       borderRadius: 7,
       padding: 14,
       elevation: 2,
-      marginBottom: 10
+      shadowColor: '#000',
+      shadowOffset: { width: 1, height: 1 },
+      shadowOpacity: 0.25,
+      shadowRadius: 3,
+      marginBottom: 10,
     },
     buttonClose: {
       backgroundColor: primaryColor,
@@ -191,14 +205,14 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
       color: secondaryColor,
       fontWeight: 'bold',
       textAlign: 'center',
-      fontSize: 15
+      fontSize: 15,
     },
     headerTextStyle: {
       color: secondaryColor,
       fontWeight: 'bold',
       textAlign: 'center',
       fontSize: 20,
-      paddingBottom: 10
+      paddingBottom: 10,
     },
     modalTextInput: {
       borderWidth: 1,
@@ -221,8 +235,8 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
       justifyContent: 'center',
       alignItems: 'center',
       top: -13,
-      right: -13
-    }
+      right: -13,
+    },
   });
   const { startRecording, startRecordingMethod, isPaused, pauseRecordingMethod } = useMyContext();
   const [showButtons, setShowButtons] = useState(false);
@@ -237,20 +251,23 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
   const [translateY3] = useState(new Animated.Value(0));
   const [screenshotUrls, setScreenshotUrls] = React.useState([]);
   const [thumbnail, setThumbnail] = useState([]);
-  const [mergedThumbnails, setMergedThumbnails] = useState([...screenshotUrls, ...thumbnail].filter(item => !!item));
+  const [mergedThumbnails, setMergedThumbnails] = useState(
+    [...screenshotUrls, ...thumbnail].filter((item) => !!item)
+  );
 
   useEffect(() => {
     setScreenshotCount(mergedThumbnails.length);
   }, [mergedThumbnails, showButtons]);
 
   useEffect(() => {
-    setMergedThumbnails(prevMergedThumbnails => {
-      return [...screenshotUrls, ...thumbnail].filter(item => !!item);
+    setMergedThumbnails((prevMergedThumbnails) => {
+      return [...screenshotUrls, ...thumbnail].filter((item) => !!item);
     });
   }, [screenshotUrls, thumbnail, showButtons]);
 
   useEffect(() => {
     if (showButtons) {
+      // generateThumbnail();
       setShowScreenShotCount(true);
       Animated.parallel([
         Animated.timing(translateY1, {
@@ -299,7 +316,7 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
       return recordScreenEvents.addListener(eventName, callback);
     };
 
-    const handleRecordingEvent = eventData => {
+    const handleRecordingEvent = (eventData) => {
       if (eventData === 'true') {
         startRecordingMethod(false);
       } else if (eventData === 'false') {
@@ -310,7 +327,7 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
       }
     };
 
-    const handleSessionConnectEvent = event => {
+    const handleSessionConnectEvent = (event) => {
       if (event?.permissionGranted === true) {
         setShowRecButtonsIos(true);
       } else if (event?.recordingComplete === 1) {
@@ -324,17 +341,17 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
     const androidEventListener =
       Platform.OS === 'android'
         ? addRecordingEventListener(
-          'RecordingPermissionDenied',
-          handleRecordingEvent,
-        )
+            'RecordingPermissionDenied',
+            handleRecordingEvent
+          )
         : null;
 
     const iosEventListener =
       Platform.OS === 'ios'
         ? addRecordingEventListener(
-          'onSessionConnect',
-          handleSessionConnectEvent,
-        )
+            'onSessionConnect',
+            handleSessionConnectEvent
+          )
         : null;
 
     return () => {
@@ -349,13 +366,17 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
   }, []);
 
   const handleDeleteItem = (index) => {
-    setMergedThumbnails(prevMergedThumbnails => {
+    setMergedThumbnails((prevMergedThumbnails) => {
       const updatedThumbnails = [...prevMergedThumbnails];
       const deletedItem = updatedThumbnails.splice(index, 1)[0];
       if (screenshotUrls.includes(deletedItem)) {
-        setScreenshotUrls(prevScreenshotUrls => prevScreenshotUrls.filter(url => url !== deletedItem));
+        setScreenshotUrls((prevScreenshotUrls) =>
+          prevScreenshotUrls.filter((url) => url !== deletedItem)
+        );
       } else if (thumbnail.includes(deletedItem)) {
-        setThumbnail(prevThumbnails => prevThumbnails.filter(thumb => thumb !== deletedItem));
+        setThumbnail((prevThumbnails) =>
+          prevThumbnails.filter((thumb) => thumb !== deletedItem)
+        );
       }
       return updatedThumbnails;
     });
@@ -364,12 +385,12 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
   const captureScreenshot = async () => {
     try {
       const uri = await captureRef(viewShotRef, {
-        format: "jpg",
+        format: 'jpg',
         quality: 0.9,
       });
       setScreenshotUrls((prevUris) => [...prevUris, uri]);
     } catch (error) {
-      console.error("Oops, snapshot failed", error);
+      console.error('Oops, snapshot failed', error);
     }
   };
 
@@ -382,8 +403,8 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
   const generateThumbnail = async (path) => {
     try {
       const response = await createThumbnail({
-        url: path,
-        timeStamp: 10000,
+        url: Platform.OS === 'ios' ? path.result.outputURL : `file://${path}`,
+        timeStamp: 1000,
         format: 'png',
       });
       if (response?.path) {
@@ -392,9 +413,9 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
     } catch (err) {
       console.error(err);
     }
-  }
+  };
 
-  const rotateImage = toValue => {
+  const rotateImage = (toValue) => {
     Animated.timing(rotation, {
       toValue,
       duration: 200,
@@ -403,7 +424,7 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
     }).start();
   };
 
-  const startRecordingNative = async config => {
+  const startRecordingNative = async (config) => {
     try {
       console.log('Recording start ==>', config);
       await RecordScreen.setup(config);
@@ -417,7 +438,7 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
     try {
       const result = await RecordScreen.stopRecording();
       console.log('Recording stopped. Result:', result);
-      generateThumbnail(`file://${result}`)
+      generateThumbnail(result);
       setShowButtons(true);
       return result;
     } catch (error) {
@@ -482,10 +503,10 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
     }
   };
 
-  const handleSubButtonPress = action => {
+  const handleSubButtonPress = (action) => {
     switch (action) {
       case 'Camera':
-        setShowScreenShotCount(true)
+        setShowScreenShotCount(true);
         captureScreenshot();
         soundFile.play();
         break;
@@ -499,26 +520,27 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
   };
 
   const handleCloseFeedbackPopup = () => {
-    setModalVisible(false)
+    setModalVisible(false);
     setScreenshotCount(mergedThumbnails.length);
-  }
+  };
 
   const handleSubmitFeedback = () => {
-    setModalVisible(false)
-    setScreenshotCount(0)
-    setShowScreenShotCount(false)
-    setThumbnail([])
-    setScreenshotUrls([])
-    setMergedThumbnails([])
-    setShowButtons(false)
-  }
+    setModalVisible(false);
+    setScreenshotCount(0);
+    setShowScreenShotCount(false);
+    setThumbnail([]);
+    setScreenshotUrls([]);
+    setMergedThumbnails([]);
+    setShowButtons(false);
+  };
 
   const renderPlusButton = () => {
     return (
       <TouchableOpacity
         activeOpacity={1}
         style={styles.mainButton}
-        onPress={handleMainButtonPress}>
+        onPress={handleMainButtonPress}
+      >
         <Animated.Image
           source={icon.plus}
           style={[
@@ -547,7 +569,8 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
             {
               transform: [{ translateY: translateY3 }],
             },
-          ]}>
+          ]}
+        >
           {showScreenShotCount && screenshotCount !== 0 && (
             <View style={styles.screenshotCountBtn}>
               <Text style={styles.countText}>{screenshotCount}</Text>
@@ -556,7 +579,8 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
 
           <TouchableOpacity
             onPress={() => setModalVisible(true)}
-            style={styles.subButton}>
+            style={styles.subButton}
+          >
             <Image source={icon.feedback} style={styles.iconStyle} />
           </TouchableOpacity>
         </Animated.View>
@@ -565,10 +589,12 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
             {
               transform: [{ translateY: translateY1 }],
             },
-          ]}>
+          ]}
+        >
           <TouchableOpacity
             onPress={() => handleSubButtonPress('Camera')}
-            style={styles.subButton}>
+            style={styles.subButton}
+          >
             <Image source={icon.camera} style={styles.iconStyle} />
           </TouchableOpacity>
         </Animated.View>
@@ -577,10 +603,12 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
             {
               transform: [{ translateY: translateY2 }],
             },
-          ]}>
+          ]}
+        >
           <TouchableOpacity
             onPress={() => handleSubButtonPress('Screen Recording')}
-            style={styles.subButton}>
+            style={styles.subButton}
+          >
             <Image source={icon.video} style={styles.iconStyle} />
           </TouchableOpacity>
         </Animated.View>
@@ -596,7 +624,8 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
         </View>
         <TouchableOpacity
           style={styles.playPauseButton}
-          onPress={handlePlayPause}>
+          onPress={handlePlayPause}
+        >
           <Image
             source={isPaused ? icon.play : icon.pause}
             style={styles.smallIconStyle}
@@ -604,7 +633,8 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.playPauseButton}
-          onPress={handleStopPress}>
+          onPress={handleStopPress}
+        >
           <Image source={icon.stop} style={styles.smallIconStyle} />
         </TouchableOpacity>
       </View>
@@ -619,7 +649,8 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
         </View>
         <TouchableOpacity
           style={styles.playPauseButton}
-          onPress={handleStopPress}>
+          onPress={handleStopPress}
+        >
           <Image source={icon.stop} style={styles.smallIconStyle} />
         </TouchableOpacity>
       </View>
@@ -630,56 +661,65 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
     return (
       <View style={styles.centeredView}>
         <Modal
-          animationType='none'
+          animationType="none"
           transparent={true}
           visible={modalVisible}
           onRequestClose={() => {
             setModalVisible(false);
-          }}>
-          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.centeredView}>
+          }}
+        >
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.centeredView}
+          >
             <View style={styles.modalView}>
               <Text style={styles.headerTextStyle}>Feedback</Text>
               <TouchableOpacity
                 activeOpacity={1}
-                style={styles.cancelModalBtn} onPress={() => handleCloseFeedbackPopup()}>
+                style={styles.cancelModalBtn}
+                onPress={() => handleCloseFeedbackPopup()}
+              >
                 <Image source={icon.cancel} style={styles.cancelIconStyle} />
               </TouchableOpacity>
-              <TextInput style={styles.modalTextInput}
-                placeholder='Enter your feedback'
+              <TextInput
+                style={styles.modalTextInput}
+                placeholder="Enter your feedback"
                 placeholderTextColor={'#929292'}
                 multiline={true}
               />
-              <View
-                style={styles.thumbnailView}
-              >
+              <View style={styles.thumbnailView}>
                 <FlatList
                   data={mergedThumbnails}
                   renderItem={({ item, index }) => {
                     return (
-                      <View
-                        style={styles.thumbnailContainer}
-                      >
+                      <View style={styles.thumbnailContainer}>
                         <ImageBackground
                           style={styles.thumbnailStyle}
                           source={{
-                            uri: item
-                          }} >
+                            uri: item,
+                          }}
+                        >
                           {thumbnail.includes(item) && (
-                            <View
-                              style={styles.playIconOverlay}
-                            >
-                              <Image source={icon.play} style={styles.cancelIconStyle} />
+                            <View style={styles.playIconOverlay}>
+                              <Image
+                                source={icon.play}
+                                style={styles.cancelIconStyle}
+                              />
                             </View>
                           )}
                         </ImageBackground>
                         <TouchableOpacity
                           activeOpacity={1}
                           onPress={() => handleDeleteItem(index)}
-                          style={styles.delThumbnailView}>
-                          <Image source={icon.cancel} style={styles.cancelIconStyle} />
+                          style={styles.delThumbnailView}
+                        >
+                          <Image
+                            source={icon.cancel}
+                            style={styles.cancelIconStyle}
+                          />
                         </TouchableOpacity>
                       </View>
-                    )
+                    );
                   }}
                   keyExtractor={(index) => index.toString()}
                   showsVerticalScrollIndicator={false}
@@ -689,15 +729,18 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
               <TouchableOpacity
                 activeOpacity={1}
                 style={[styles.button, styles.buttonClose]}
-                onPress={() => { handleSubmitFeedback() }}>
+                onPress={() => {
+                  handleSubmitFeedback();
+                }}
+              >
                 <Text style={styles.textStyle}>Submit</Text>
               </TouchableOpacity>
             </View>
           </KeyboardAvoidingView>
         </Modal>
       </View>
-    )
-  }
+    );
+  };
 
   return (
     <View>
@@ -736,7 +779,6 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
       )}
     </View>
   );
-
 };
 
 export default FloatingButton;
