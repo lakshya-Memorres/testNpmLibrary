@@ -18,9 +18,9 @@ To use this package locally, add the following line to your package.json depende
 Ensure you have the required libraries installed:
 
 ```bash
-npm install react-native-create-thumbnail@^2.0.0
-npm install react-native-sound@^0.11.2
-npm install react-native-view-shot@^3.8.0
+npm install react-native-create-thumbnail
+npm install react-native-sound
+npm install react-native-view-shot
 ```
 On iOS, run:
 ```bash
@@ -52,7 +52,6 @@ For sound capture, you'll need to add audio files to your project:
 Wrap your main component with `MyProvider` in the index.js file:
 
 ```javascript
-import App from './src/App';
 import { name as appName } from './app.json';
 import { MyProvider } from 'react-native-record-screen';
 
