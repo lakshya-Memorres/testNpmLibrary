@@ -1,9 +1,8 @@
 
 import * as React from 'react';
-import { StyleSheet, View, Text, Image } from 'react-native';
-import FloatingButton from 'react-native-record-screen';
+import { StyleSheet, View, Text } from 'react-native';
+import { FloatingButton, MyProvider, useMyContext } from 'react-native-record-screen';
 import ViewShot from 'react-native-view-shot';
-import { MyProvider, useMyContext } from './context/MyContext';
 
 
 export default function App() {
@@ -14,7 +13,7 @@ export default function App() {
       <ViewShot ref={viewShot} style={styles.container}
         options={{ result: "data-uri"}}
         >
-        <View style={{flex:1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#90EE90'}}>
+        <View style={styles.mainView}>
           <Text>Home Page</Text>
         </View>
       </ViewShot>
@@ -32,13 +31,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-    backgroundVideo: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      bottom: 0,
-      right: 0,
-      borderWidth: 2,
-      borderColor: 'white'
-    },
+  mainView: {
+    flex:1, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    backgroundColor: '#90EE90'
+  }
 });

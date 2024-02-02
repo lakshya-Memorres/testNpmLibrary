@@ -101,6 +101,14 @@ public class RecordScreenModule extends ReactContextBaseJavaModule implements HB
     }
 
     @ReactMethod
+    public void addListener(String eventName) {
+    }
+   
+    @ReactMethod
+    public void removeListeners(Integer count) {
+    }
+
+    @ReactMethod
     public void setup(ReadableMap readableMap) {
         Log.d(TAG, "setup config: "+ readableMap);
         if (getCurrentActivity() != null) {

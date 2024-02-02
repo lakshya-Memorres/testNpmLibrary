@@ -1,31 +1,102 @@
+
 # react-native-record-screen
 
-Reusable component for feedback functionality
+A React Native package for capturing screenshots and recording screen interactions with feedback functionalities.
+
+
+
+
 
 ## Installation
 
-```sh
-npm install react-native-record-screen
+To use this package locally, add the following line to your package.json dependencies:
+
+```bash
+"react-native-record-screen": "https://github.com/lakshya-Memorres/testNpmLibrary"
 ```
 
-## Usage
+Ensure you have the required libraries installed:
 
-```js
-import { multiply } from 'react-native-record-screen';
-
-// ...
-
-const result = await multiply(3, 7);
+```bash
+npm install react-native-create-thumbnail@^2.0.0
+npm install react-native-sound@^0.11.2
+npm install react-native-view-shot@^3.8.0
+```
+On iOS, run:
+```bash
+cd ios && pod install
+```
+Additionally, make sure to include the required permissions in your AndroidManifest.xml:
+```bash
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
 ```
 
-## Contributing
+And in your Info.plist for iOS:
+```bash
+<key>NSCameraUsageDescription</key>
+<string>Please allow use of camera</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Please allow use of microphone</string>
+```
 
-See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
+For sound capture, you'll need to add audio files to your project:
+- **Android**: Save your sound clip files under the directory **`android/app/src/main/res/raw`**.
+- **iOS**: Add your sound files to the project in Xcode.
 
-## License
+## Usage/Examples
 
-MIT
+Wrap your main component with `MyProvider` in the index.js file:
 
----
+```javascript
+import App from './src/App';
+import { name as appName } from './app.json';
+import { MyProvider } from 'react-native-record-screen';
 
-Made with [create-react-native-library](https://github.com/callstack/react-native-builder-bob)
+const Main = () => (
+    <MyProvider>
+      <App />
+    </MyProvider>
+);
+AppRegistry.registerComponent(appName, () => Main);
+```
+
+In your App.js:
+
+```javascript
+import { FloatingButton, MyProvider, useMyContext } from 'react-native-record-screen';
+import ViewShot from 'react-native-view-shot';
+
+export default function App() {
+  const viewShot = React.useRef(null);
+
+  return (
+    <MyProvider>
+      <ViewShot ref={viewShot} style={styles.container} options={{ result: "data-uri"}}>
+        <RootNavigator/>
+      </ViewShot>
+     <FloatingButton 
+      useMyContext={useMyContext} 
+      primaryColor={'#FBDD24'}
+      secondaryColor={'#3F3F3F'}
+      viewShotRef={viewShot}
+      />
+    </MyProvider>
+  );
+}
+```
+
+
+
+## Props
+
+
+Feel free to customize the primary and secondary colors according to your app theme.
+- **`useMyContext`**: A hook to use the context values provided by the package.
+- **`primaryColor`**: The primary color for the FloatingButton component.
+- **`secondaryColor`**: The secondary color for the FloatingButton component.
+- **`viewShotRef`**: A ref to the react-native-view-shot component for capturing screenshots.
+

@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -18,16 +18,14 @@ import {
 } from 'react-native';
 import { icon } from './utils';
 import { Platform } from 'react-native';
-// import {useMyContext} from './context/MyContext';
 import AnimatedLoader from './AnimatedLoader';
 import Sound from 'react-native-sound';
 import { createThumbnail } from "react-native-create-thumbnail";
-import ViewShot, { captureRef } from 'react-native-view-shot';
+import { captureRef } from 'react-native-view-shot';
 
 const { RecordScreen } = NativeModules;
 const recordScreenEvents = new NativeEventEmitter(RecordScreen);
 
-const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColor }) => {
@@ -212,7 +210,6 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
       fontSize: 16,
       borderWidth: 1,
       borderColor: 'rgba(211, 211, 211, 0.9)',
-      // borderColor: secondaryColor,
       marginBottom: 15
     },
     cancelModalBtn: {
@@ -227,8 +224,7 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
       right: -13
     }
   });
-  const { startRecording, startRecordingMethod, isPaused, pauseRecordingMethod } =
-    useMyContext();
+  const { startRecording, startRecordingMethod, isPaused, pauseRecordingMethod } = useMyContext();
   const [showButtons, setShowButtons] = useState(false);
   const [showMainButton, setShowMainButton] = useState(false);
   const [showRecButtonsIos, setShowRecButtonsIos] = useState(false);
@@ -239,8 +235,6 @@ const FloatingButton = ({ viewShotRef, useMyContext, primaryColor, secondaryColo
   const [translateY1] = useState(new Animated.Value(0));
   const [translateY2] = useState(new Animated.Value(0));
   const [translateY3] = useState(new Animated.Value(0));
-
-  // thumbnail
   const [screenshotUrls, setScreenshotUrls] = React.useState([]);
   const [thumbnail, setThumbnail] = useState([]);
   const [mergedThumbnails, setMergedThumbnails] = useState([...screenshotUrls, ...thumbnail].filter(item => !!item));

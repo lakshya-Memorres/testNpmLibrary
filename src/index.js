@@ -1,2 +1,2 @@
-import FloatingButton from './FloatingButton';
-module.exports = FloatingButton;
+export { default as FloatingButton } from './FloatingButton';
+export { MyProvider, useMyContext } from './context/MyContext';

@@ -1,4 +1,3 @@
-// AnimatedLoader.js
 import React, {useRef, useEffect, useState} from 'react';
 import {View, Animated, Easing, Text, StyleSheet, Dimensions} from 'react-native';
 
