@@ -1,11 +1,9 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import {
   View,
   TouchableOpacity,
-  StyleSheet,
   Animated,
   Easing,
-  Image,
   NativeEventEmitter,
   NativeModules,
   Dimensions,
@@ -17,12 +15,13 @@ import {
   ImageBackground,
   PanResponder
 } from 'react-native';
-import { icon } from './utils';
 import { Platform } from 'react-native';
 import AnimatedLoader from './AnimatedLoader';
 import Sound from 'react-native-sound';
 import { createThumbnail } from "react-native-create-thumbnail";
 import { captureRef } from 'react-native-view-shot';
+import FastImage from 'react-native-fast-image';
+import createStyles from './styles'
 
 const { RecordScreen } = NativeModules;
 const recordScreenEvents = new NativeEventEmitter(RecordScreen);
@@ -30,217 +29,34 @@ const recordScreenEvents = new NativeEventEmitter(RecordScreen);
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-const FloatingButton = ({
+const FloatingButton = React.memo(({
   viewShotRef,
   useMyContext,
   primaryColor,
   secondaryColor,
 }) => {
-  const styles = StyleSheet.create({
-    container: {
-      position: 'absolute',
-      zIndex: 1,
-      bottom: 16,
-      right: 16,
-    },
-    mainButton: {
-      backgroundColor: primaryColor,
-      borderRadius: 27,
-      width: 54,
-      height: 54,
-      justifyContent: 'center',
-      alignItems: 'center',
-      elevation: 5,
-      shadowColor: '#000',
-      shadowOffset: { width: 1, height: 1 },
-      shadowOpacity: 0.25,
-      shadowRadius: 3,
-      zIndex: 99999,
-    },
-    screenshotCountBtn: {
-      backgroundColor: primaryColor,
-      borderRadius: 11,
-      width: 22,
-      height: 22,
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 99999,
-      position: 'absolute',
-      bottom: 47,
-      right: -5,
-      borderWidth: 0.7,
-      borderColor: 'white',
-    },
-    subButtonContainer: {
-      position: 'absolute',
-      bottom: 54,
-    },
-    subButton: {
-      backgroundColor: primaryColor,
-      borderRadius: 27,
-      width: 54,
-      height: 54,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginBottom: 10,
-      elevation: 5,
-      shadowColor: '#000',
-      shadowOffset: { width: 1, height: 1 },
-      shadowOpacity: 0.25,
-      shadowRadius: 3,
-    },
-    playPauseContainer: {
-      position: 'absolute',
-      bottom: 10,
-      right: 0,
-      backgroundColor: primaryColor,
-      borderRadius: 27,
-    },
-    playPauseButton: {
-      backgroundColor: primaryColor,
-      borderRadius: 20,
-      width: 40,
-      height: 40,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    buttonText: {
-      color: 'white',
-      fontSize: 14,
-    },
-    countText: {
-      color: secondaryColor,
-      fontSize: 13,
-    },
-    iconStyle: {
-      height: 25,
-      width: 25,
-      tintColor: secondaryColor,
-    },
-    recIconStyle: {
-      height: 22,
-      width: 22,
-      tintColor: secondaryColor,
-    },
-    smallIconStyle: {
-      height: 20,
-      width: 20,
-      tintColor: secondaryColor,
-    },
-    smallIconIosStyle: {
-      height: 20,
-      width: 20,
-    },
-    cancelIconStyle: {
-      height: 12,
-      width: 12,
-      tintColor: secondaryColor,
-    },
-    delThumbnailView: {
-      tintColor: secondaryColor,
-      position: 'absolute',
-      height: 26,
-      width: 26,
-      borderRadius: 13,
-      backgroundColor: primaryColor,
-      justifyContent: 'center',
-      alignItems: 'center',
-      top: 5,
-      right: 5,
-    },
-    playIconOverlay: {
-      tintColor: secondaryColor,
-      height: 26,
-      width: 26,
-      borderRadius: 13,
-      backgroundColor: primaryColor,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    thumbnailContainer: {
-      overflow: 'hidden',
-    },
-    thumbnailStyle: {
-      height: 150,
-      width: SCREEN_WIDTH / 3.9,
-      margin: 2,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    centeredView: {
-      flex: 1,
-    },
-    thumbnailView: {
-      flex: 1,
-      marginBottom: 10,
-      alignSelf: 'flex-start',
-    },
-    modalView: {
-      margin: 20,
-      backgroundColor: 'white',
-      borderRadius: 20,
-      paddingVertical: 10,
-      paddingHorizontal: 20,
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: { width: 1, height: 1 },
-      shadowOpacity: 0.25,
-      shadowRadius: 3,
-      elevation: 5,
-      flex: 1,
-    },
-    button: {
-      borderRadius: 7,
-      padding: 14,
-      elevation: 2,
-      shadowColor: '#000',
-      shadowOffset: { width: 1, height: 1 },
-      shadowOpacity: 0.25,
-      shadowRadius: 3,
-      marginBottom: 10,
-    },
-    buttonClose: {
-      backgroundColor: primaryColor,
-      width: '100%',
-    },
-    textStyle: {
-      color: secondaryColor,
-      fontWeight: 'bold',
-      textAlign: 'center',
-      fontSize: 15,
-    },
-    headerTextStyle: {
-      color: secondaryColor,
-      fontWeight: 'bold',
-      textAlign: 'center',
-      fontSize: 20,
-      paddingBottom: 10,
-    },
-    modalTextInput: {
-      borderWidth: 1,
-      width: '100%',
-      height: 200,
-      borderRadius: 15,
-      textAlignVertical: 'top',
-      paddingHorizontal: 10,
-      fontSize: 16,
-      borderWidth: 1,
-      borderColor: 'rgba(211, 211, 211, 0.9)',
-      marginBottom: 15
-    },
-    cancelModalBtn: {
-      position: 'absolute',
-      height: 30,
-      width: 30,
-      borderRadius: 15,
-      backgroundColor: primaryColor,
-      justifyContent: 'center',
-      alignItems: 'center',
-      top: -13,
-      right: -13,
-    },
-  });
+  
+  const styles = useMemo(() => createStyles(primaryColor, secondaryColor), [
+    primaryColor,
+    secondaryColor,
+  ]);
+
+  const optimizedImages = useMemo(() => {
+    return {
+      plus: require('../src/Icons/plusIcon.png'),
+      camera: require('../src/Icons/camera.png'),
+      video: require('../src/Icons/video.png'),
+      play: require('../src/Icons/play.png'),
+      pause: require('../src/Icons/pause.png'),
+      stop: require('../src/Icons/stop.png'),
+      cancel: require('../src/Icons/cancel.png'),
+      recording: require('../src/Icons/rec1.gif'),
+      feedback: require('../src/Icons/feedback.png'),
+    };
+  }, []);
+  
   const { startRecording, startRecordingMethod, isPaused, pauseRecordingMethod } = useMyContext();
+  const pan = useRef(new Animated.ValueXY()).current;
   const [showButtons, setShowButtons] = useState(false);
   const [showMainButton, setShowMainButton] = useState(false);
   const [showRecButtonsIos, setShowRecButtonsIos] = useState(false);
@@ -256,10 +72,6 @@ const FloatingButton = ({
   const [mergedThumbnails, setMergedThumbnails] = useState(
     [...screenshotUrls, ...thumbnail].filter((item) => !!item)
   );
-
-  //drag
-  const pan = useRef(new Animated.ValueXY()).current;
-  const [mainButtonPosition, setMainButtonPosition] = useState('bottom');
   
   const panResponder = useRef(
     PanResponder.create({
@@ -289,7 +101,7 @@ const FloatingButton = ({
       return [...screenshotUrls, ...thumbnail].filter((item) => !!item);
     });
   }, [screenshotUrls, thumbnail, showButtons]);
- //384, 320, 448
+
  useEffect(() => {
   if (showButtons) {
     setShowScreenShotCount(true);
@@ -333,52 +145,6 @@ const FloatingButton = ({
     ]).start();
   }
 }, [showButtons, startRecording, translateY3._value]);
-
-// useEffect(() => {
-
-//   if (showButtons) {
-//     setShowScreenShotCount(true);
-//     Animated.parallel([
-//       Animated.timing(translateY1, {
-//         toValue: 0,
-//         duration: 200,
-//         useNativeDriver: false,
-//       }),
-//       Animated.timing(translateY2, {
-//         toValue: 0,
-//         duration: 200,
-//         useNativeDriver: false,
-//       }),
-//       Animated.timing(translateY3, {
-//         toValue: 0,
-//         duration: 200,
-//         useNativeDriver: false,
-//       }),
-//       rotateImage(mainButtonPosition === 'bottom' ? 45 : -45), // Adjust the rotation based on the main button position
-//     ]).start();
-//   } else {
-//     setShowScreenShotCount(false);
-//     Animated.parallel([
-//       Animated.timing(translateY1, {
-//         toValue: mainButtonPosition === 'bottom' ? 128 : -128,
-//         duration: 200,
-//         useNativeDriver: false,
-//       }),
-//       Animated.timing(translateY2, {
-//         toValue: mainButtonPosition === 'bottom' ? 64 : -64,
-//         duration: 200,
-//         useNativeDriver: false,
-//       }),
-//       Animated.timing(translateY3, {
-//         toValue: mainButtonPosition === 'bottom' ? 192 : -192,
-//         duration: 200,
-//         useNativeDriver: false,
-//       }),
-//       rotateImage(0),
-//     ]).start();
-//   }
-// }, [showButtons, startRecording, translateY3._value, mainButtonPosition]);
-
 
   useEffect(() => {
     const addRecordingEventListener = (eventName, callback) => {
@@ -550,7 +316,6 @@ const FloatingButton = ({
   const handleMainButtonPress = () => {
     setShowButtons(!showButtons);
     startRecordingMethod(false);
-    // setMainButtonPosition(mainButtonPosition === 'bottom' ? 'top' : 'bottom');
   };
 
   const handlePlayPause = () => {
@@ -612,7 +377,7 @@ const FloatingButton = ({
         onPress={handleMainButtonPress}
       >
         <Animated.Image
-          source={icon.plus}
+          source={optimizedImages.plus}
           style={[
             styles.iconStyle,
             {
@@ -636,18 +401,11 @@ const FloatingButton = ({
       <Animated.View
         style={[
           styles.subButtonContainer,
-          // {
-          //   bottom: mainButtonPosition === 'bottom' ? 54 : undefined,
-          //   top: mainButtonPosition === 'top' ? 54 : undefined,
-          // },
           {
-            
             transform: [
               {
-                // translateY : 0
                 translateY: pan.y.interpolate({
                   inputRange: [0,0],
-                  // outputRange: [showButtons ? 256 : 0, 0],
                   outputRange: [0, 0],
                   extrapolate: 'clamp',
                 }),
@@ -672,7 +430,7 @@ const FloatingButton = ({
             onPress={() => setModalVisible(true)}
             style={styles.subButton}
           >
-            <Image source={icon.feedback} style={styles.iconStyle} />
+            <FastImage source={optimizedImages.feedback} style={styles.iconStyle} />
           </TouchableOpacity>
         </Animated.View>
         <Animated.View
@@ -686,7 +444,7 @@ const FloatingButton = ({
             onPress={() => handleSubButtonPress('Camera')}
             style={styles.subButton}
           >
-            <Image source={icon.camera} style={styles.iconStyle} />
+            <FastImage source={optimizedImages.camera} style={styles.iconStyle} />
           </TouchableOpacity>
         </Animated.View>
         <Animated.View
@@ -700,7 +458,7 @@ const FloatingButton = ({
             onPress={() => handleSubButtonPress('Screen Recording')}
             style={styles.subButton}
           >
-            <Image source={icon.video} style={styles.iconStyle} />
+            <FastImage source={optimizedImages.video} style={styles.iconStyle} />
           </TouchableOpacity>
         </Animated.View>
       </Animated.View>
@@ -711,14 +469,14 @@ const FloatingButton = ({
     return (
       <View style={styles.playPauseContainer}>
         <View style={styles.playPauseButton}>
-          <Image source={icon.recording} style={styles.smallIconStyle} />
+          <FastImage source={optimizedImages.recording} style={styles.smallIconStyle} />
         </View>
         <TouchableOpacity
           style={styles.playPauseButton}
           onPress={handlePlayPause}
         >
-          <Image
-            source={isPaused ? icon.play : icon.pause}
+          <FastImage
+            source={isPaused ? optimizedImages.play : optimizedImages.pause}
             style={styles.smallIconStyle}
           />
         </TouchableOpacity>
@@ -726,7 +484,7 @@ const FloatingButton = ({
           style={styles.playPauseButton}
           onPress={handleStopPress}
         >
-          <Image source={icon.stop} style={styles.smallIconStyle} />
+          <FastImage source={optimizedImages.stop} style={styles.smallIconStyle} />
         </TouchableOpacity>
       </View>
     );
@@ -736,13 +494,13 @@ const FloatingButton = ({
     return (
       <View style={styles.playPauseContainer}>
         <View style={styles.playPauseButton}>
-          <Image source={icon.recording} style={styles.smallIconIosStyle} />
+          <FastImage source={optimizedImages.recording} style={styles.smallIconIosStyle} />
         </View>
         <TouchableOpacity
           style={styles.playPauseButton}
           onPress={handleStopPress}
         >
-          <Image source={icon.stop} style={styles.smallIconStyle} />
+          <FastImage source={optimizedImages.stop} style={styles.smallIconStyle} />
         </TouchableOpacity>
       </View>
     );
@@ -770,7 +528,7 @@ const FloatingButton = ({
                 style={styles.cancelModalBtn}
                 onPress={() => handleCloseFeedbackPopup()}
               >
-                <Image source={icon.cancel} style={styles.cancelIconStyle} />
+                <FastImage source={optimizedImages.cancel} style={styles.cancelIconStyle} />
               </TouchableOpacity>
               <TextInput
                 style={styles.modalTextInput}
@@ -792,8 +550,8 @@ const FloatingButton = ({
                         >
                           {thumbnail.includes(item) && (
                             <View style={styles.playIconOverlay}>
-                              <Image
-                                source={icon.play}
+                              <FastImage
+                                source={optimizedImages.play}
                                 style={styles.cancelIconStyle}
                               />
                             </View>
@@ -804,8 +562,8 @@ const FloatingButton = ({
                           onPress={() => handleDeleteItem(index)}
                           style={styles.delThumbnailView}
                         >
-                          <Image
-                            source={icon.cancel}
+                          <FastImage
+                            source={optimizedImages.cancel}
                             style={styles.cancelIconStyle}
                           />
                         </TouchableOpacity>
@@ -840,7 +598,6 @@ const FloatingButton = ({
       ) : (
         <View>
           {modalVisible && renderFeedbackPopup()}
-          {/* <View style={styles.container}> */}
           <Animated.View
         style={[styles.container, {
           transform: [{translateX: pan.x.interpolate({
@@ -878,12 +635,11 @@ const FloatingButton = ({
               !startRecording &&
               showRecButtonsIos &&
               renderIosComponent()}
-          {/* </View> */}
           </Animated.View>
         </View>
       )}
     </View>
   );
-};
+})
 
 export default FloatingButton;
