@@ -469,7 +469,7 @@ const FloatingButton = React.memo(({
     return (
       <View style={styles.playPauseContainer}>
         <View style={styles.playPauseButton}>
-          <FastImage tintColor={secondaryColor} source={optimizedImages.recording} style={styles.smallIconStyle} />
+          <FastImage tintColor={secondaryColor} source={isPaused ? optimizedImages.video : optimizedImages.recording} style={styles.smallIconStyle} />
         </View>
         <TouchableOpacity
           style={styles.playPauseButton}
