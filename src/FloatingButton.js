@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -15,6 +15,7 @@ import {
   KeyboardAvoidingView,
   FlatList,
   ImageBackground,
+  PanResponder
 } from 'react-native';
 import { icon } from './utils';
 import { Platform } from 'react-native';
@@ -27,6 +28,7 @@ const { RecordScreen } = NativeModules;
 const recordScreenEvents = new NativeEventEmitter(RecordScreen);
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const FloatingButton = ({
   viewShotRef,
@@ -255,6 +257,29 @@ const FloatingButton = ({
     [...screenshotUrls, ...thumbnail].filter((item) => !!item)
   );
 
+  //drag
+  const pan = useRef(new Animated.ValueXY()).current;
+  const [mainButtonPosition, setMainButtonPosition] = useState('bottom');
+  
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderMove: (_, gesture) => {
+        const { dx, dy } = gesture;
+        pan.x.setValue(dx);
+        pan.y.setValue(dy);
+      },
+      onPanResponderRelease: (_, gesture) => {
+        const { dx, dy, moveX, moveY} = gesture;
+        pan.extractOffset();
+        Animated.spring(pan, {
+          toValue: { x: 2, y: 2 },
+          useNativeDriver: false,
+        }).start();
+      },
+    }),
+  ).current;
+
   useEffect(() => {
     setScreenshotCount(mergedThumbnails.length);
   }, [mergedThumbnails, showButtons]);
@@ -264,52 +289,96 @@ const FloatingButton = ({
       return [...screenshotUrls, ...thumbnail].filter((item) => !!item);
     });
   }, [screenshotUrls, thumbnail, showButtons]);
+ //384, 320, 448
+ useEffect(() => {
+  if (showButtons) {
+    setShowScreenShotCount(true);
+    Animated.parallel([
+      Animated.timing(translateY1, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: false,
+      }),
+      Animated.timing(translateY2, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: false,
+      }),
+      Animated.timing(translateY3, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: false,
+      }),
+      rotateImage(45),
+    ]).start();
+  } else {
+    setShowScreenShotCount(false);
+    Animated.parallel([
+      Animated.timing(translateY1, {
+        toValue:  128,
+        duration: 200,
+        useNativeDriver: false,
+      }),
+      Animated.timing(translateY2, {
+        toValue:  64,
+        duration: 200,
+        useNativeDriver: false,
+      }),
+      Animated.timing(translateY3, {
+        toValue:  192,
+        duration: 200,
+        useNativeDriver: false,
+      }),
+      rotateImage(0),
+    ]).start();
+  }
+}, [showButtons, startRecording, translateY3._value]);
 
-  useEffect(() => {
-    if (showButtons) {
-      // generateThumbnail();
-      setShowScreenShotCount(true);
-      Animated.parallel([
-        Animated.timing(translateY1, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: false,
-        }),
-        Animated.timing(translateY2, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: false,
-        }),
-        Animated.timing(translateY3, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: false,
-        }),
-        rotateImage(45),
-      ]).start();
-    } else {
-      setShowScreenShotCount(false);
-      Animated.parallel([
-        Animated.timing(translateY1, {
-          toValue: 128,
-          duration: 200,
-          useNativeDriver: false,
-        }),
-        Animated.timing(translateY2, {
-          toValue: 64,
-          duration: 200,
-          useNativeDriver: false,
-        }),
-        Animated.timing(translateY3, {
-          toValue: 192,
-          duration: 200,
-          useNativeDriver: false,
-        }),
-        rotateImage(0),
-      ]).start();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showButtons, startRecording]);
+// useEffect(() => {
+
+//   if (showButtons) {
+//     setShowScreenShotCount(true);
+//     Animated.parallel([
+//       Animated.timing(translateY1, {
+//         toValue: 0,
+//         duration: 200,
+//         useNativeDriver: false,
+//       }),
+//       Animated.timing(translateY2, {
+//         toValue: 0,
+//         duration: 200,
+//         useNativeDriver: false,
+//       }),
+//       Animated.timing(translateY3, {
+//         toValue: 0,
+//         duration: 200,
+//         useNativeDriver: false,
+//       }),
+//       rotateImage(mainButtonPosition === 'bottom' ? 45 : -45), // Adjust the rotation based on the main button position
+//     ]).start();
+//   } else {
+//     setShowScreenShotCount(false);
+//     Animated.parallel([
+//       Animated.timing(translateY1, {
+//         toValue: mainButtonPosition === 'bottom' ? 128 : -128,
+//         duration: 200,
+//         useNativeDriver: false,
+//       }),
+//       Animated.timing(translateY2, {
+//         toValue: mainButtonPosition === 'bottom' ? 64 : -64,
+//         duration: 200,
+//         useNativeDriver: false,
+//       }),
+//       Animated.timing(translateY3, {
+//         toValue: mainButtonPosition === 'bottom' ? 192 : -192,
+//         duration: 200,
+//         useNativeDriver: false,
+//       }),
+//       rotateImage(0),
+//     ]).start();
+//   }
+// }, [showButtons, startRecording, translateY3._value, mainButtonPosition]);
+
 
   useEffect(() => {
     const addRecordingEventListener = (eventName, callback) => {
@@ -481,6 +550,7 @@ const FloatingButton = ({
   const handleMainButtonPress = () => {
     setShowButtons(!showButtons);
     startRecordingMethod(false);
+    // setMainButtonPosition(mainButtonPosition === 'bottom' ? 'top' : 'bottom');
   };
 
   const handlePlayPause = () => {
@@ -563,7 +633,28 @@ const FloatingButton = ({
 
   const renderSubButton = () => {
     return (
-      <View style={styles.subButtonContainer}>
+      <Animated.View
+        style={[
+          styles.subButtonContainer,
+          // {
+          //   bottom: mainButtonPosition === 'bottom' ? 54 : undefined,
+          //   top: mainButtonPosition === 'top' ? 54 : undefined,
+          // },
+          {
+            
+            transform: [
+              {
+                // translateY : 0
+                translateY: pan.y.interpolate({
+                  inputRange: [0,0],
+                  // outputRange: [showButtons ? 256 : 0, 0],
+                  outputRange: [0, 0],
+                  extrapolate: 'clamp',
+                }),
+              },
+            ],
+          },
+        ]}>
         <Animated.View
           style={[
             {
@@ -612,7 +703,7 @@ const FloatingButton = ({
             <Image source={icon.video} style={styles.iconStyle} />
           </TouchableOpacity>
         </Animated.View>
-      </View>
+      </Animated.View>
     );
   };
 
@@ -749,7 +840,20 @@ const FloatingButton = ({
       ) : (
         <View>
           {modalVisible && renderFeedbackPopup()}
-          <View style={styles.container}>
+          {/* <View style={styles.container}> */}
+          <Animated.View
+        style={[styles.container, {
+          transform: [{translateX: pan.x.interpolate({
+            inputRange: [-SCREEN_WIDTH + 86  , 0 ],
+            outputRange: [-SCREEN_WIDTH + 86 , 0 ],
+            extrapolate: 'clamp'
+        })}, {translateY: pan.y.interpolate({
+          inputRange: [-SCREEN_HEIGHT + 102 , 0 ],
+          outputRange: [-SCREEN_HEIGHT + 102, 0 ],
+          extrapolate: 'clamp'
+      })}],
+        }]}
+        {...panResponder.panHandlers}>
             {Platform.OS === 'android' &&
               !startRecording &&
               !showMainButton &&
@@ -774,7 +878,8 @@ const FloatingButton = ({
               !startRecording &&
               showRecButtonsIos &&
               renderIosComponent()}
-          </View>
+          {/* </View> */}
+          </Animated.View>
         </View>
       )}
     </View>

@@ -14,7 +14,6 @@ export default function App() {
         options={{ result: "data-uri"}}
         >
         <View style={styles.mainView}>
-          <Text>Home Page</Text>
         </View>
       </ViewShot>
      <FloatingButton 
@@ -35,6 +34,6 @@ const styles = StyleSheet.create({
     flex:1, 
     justifyContent: 'center', 
     alignItems: 'center', 
-    backgroundColor: '#90EE90'
+    backgroundColor: 'white'
   }
 });
