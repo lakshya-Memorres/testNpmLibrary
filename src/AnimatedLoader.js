@@ -47,8 +47,7 @@ const AnimatedLoader = ({primaryColor}) => {
 
   return (
     <View style={styles.animatedLoaderContainer}>
-      <View style={{justifyContent: 'center',
-    alignItems: 'center', backgroundColor: 'white', borderRadius: 12, padding: 20}}>
+      <View style={styles.innerLoaderContainer}>
       <Animated.View style={[styles.loader, {transform: [{rotate: spin}]}]} />
       <View style={styles.textContainer}>
         <Text style={styles.timerText}>{countdown}</Text>

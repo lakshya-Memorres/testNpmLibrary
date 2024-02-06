@@ -18,8 +18,8 @@ export default function App() {
       </ViewShot>
      <FloatingButton 
       useMyContext={useMyContext} 
-      primaryColor = {'#FBDD24'}
-      secondaryColor = {'#3F3F3F'}
+      primaryColor = {'#00B5B4'}
+      secondaryColor = {'#FFFFFF'}
       viewShotRef={viewShot}
       />
     </MyProvider>

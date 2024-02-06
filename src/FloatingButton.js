@@ -239,7 +239,7 @@ const FloatingButton = React.memo(({
     try {
       const response = await createThumbnail({
         url: Platform.OS === 'ios' ? path.result.outputURL : `file://${path}`,
-        timeStamp: 1000,
+        timeStamp: 2000,
         format: 'png',
       });
       if (response?.path) {
@@ -430,7 +430,7 @@ const FloatingButton = React.memo(({
             onPress={() => setModalVisible(true)}
             style={styles.subButton}
           >
-            <FastImage source={optimizedImages.feedback} style={styles.iconStyle} />
+            <FastImage tintColor={secondaryColor} source={optimizedImages.feedback} style={styles.iconStyle} />
           </TouchableOpacity>
         </Animated.View>
         <Animated.View
@@ -444,7 +444,7 @@ const FloatingButton = React.memo(({
             onPress={() => handleSubButtonPress('Camera')}
             style={styles.subButton}
           >
-            <FastImage source={optimizedImages.camera} style={styles.iconStyle} />
+            <FastImage tintColor={secondaryColor} source={optimizedImages.camera} style={styles.iconStyle} />
           </TouchableOpacity>
         </Animated.View>
         <Animated.View
@@ -458,7 +458,7 @@ const FloatingButton = React.memo(({
             onPress={() => handleSubButtonPress('Screen Recording')}
             style={styles.subButton}
           >
-            <FastImage source={optimizedImages.video} style={styles.iconStyle} />
+            <FastImage tintColor={secondaryColor} source={optimizedImages.video} style={styles.iconStyle} />
           </TouchableOpacity>
         </Animated.View>
       </Animated.View>
@@ -469,13 +469,14 @@ const FloatingButton = React.memo(({
     return (
       <View style={styles.playPauseContainer}>
         <View style={styles.playPauseButton}>
-          <FastImage source={optimizedImages.recording} style={styles.smallIconStyle} />
+          <FastImage tintColor={secondaryColor} source={optimizedImages.recording} style={styles.smallIconStyle} />
         </View>
         <TouchableOpacity
           style={styles.playPauseButton}
           onPress={handlePlayPause}
         >
           <FastImage
+            tintColor={secondaryColor}
             source={isPaused ? optimizedImages.play : optimizedImages.pause}
             style={styles.smallIconStyle}
           />
@@ -484,7 +485,7 @@ const FloatingButton = React.memo(({
           style={styles.playPauseButton}
           onPress={handleStopPress}
         >
-          <FastImage source={optimizedImages.stop} style={styles.smallIconStyle} />
+          <FastImage tintColor={secondaryColor} source={optimizedImages.stop} style={styles.smallIconStyle} />
         </TouchableOpacity>
       </View>
     );
@@ -494,13 +495,13 @@ const FloatingButton = React.memo(({
     return (
       <View style={styles.playPauseContainer}>
         <View style={styles.playPauseButton}>
-          <FastImage source={optimizedImages.recording} style={styles.smallIconIosStyle} />
+          <FastImage tintColor={secondaryColor} source={optimizedImages.recording} style={styles.smallIconIosStyle} />
         </View>
         <TouchableOpacity
           style={styles.playPauseButton}
           onPress={handleStopPress}
         >
-          <FastImage source={optimizedImages.stop} style={styles.smallIconStyle} />
+          <FastImage tintColor={secondaryColor} source={optimizedImages.stop} style={styles.smallIconStyle} />
         </TouchableOpacity>
       </View>
     );
@@ -528,7 +529,7 @@ const FloatingButton = React.memo(({
                 style={styles.cancelModalBtn}
                 onPress={() => handleCloseFeedbackPopup()}
               >
-                <FastImage source={optimizedImages.cancel} style={styles.cancelIconStyle} />
+                <FastImage tintColor={secondaryColor} source={optimizedImages.cancel} style={styles.cancelIconStyle} />
               </TouchableOpacity>
               <TextInput
                 style={styles.modalTextInput}
@@ -551,6 +552,7 @@ const FloatingButton = React.memo(({
                           {thumbnail.includes(item) && (
                             <View style={styles.playIconOverlay}>
                               <FastImage
+                                tintColor={secondaryColor}
                                 source={optimizedImages.play}
                                 style={styles.cancelIconStyle}
                               />
@@ -563,6 +565,7 @@ const FloatingButton = React.memo(({
                           style={styles.delThumbnailView}
                         >
                           <FastImage
+                            tintColor={secondaryColor}
                             source={optimizedImages.cancel}
                             style={styles.cancelIconStyle}
                           />

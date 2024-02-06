@@ -218,6 +218,13 @@ const createStyles = (primaryColor, secondaryColor) => {
           backgroundColor:  'rgba(255, 255, 255, 0.5)',  
           zIndex: 999,
         },
+        innerLoaderContainer: {
+          justifyContent: 'center',
+          alignItems: 'center', 
+          backgroundColor: 'white', 
+          borderRadius: 12, 
+          padding: 20
+        },
         loader: {
           width: 120,
           height: 120,
