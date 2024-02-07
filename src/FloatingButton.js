@@ -15,6 +15,7 @@ import {
   ImageBackground,
   PanResponder,
   Image,
+  Alert,
 } from 'react-native';
 import { Platform } from 'react-native';
 import AnimatedLoader from './AnimatedLoader';
@@ -23,6 +24,7 @@ import { createThumbnail } from 'react-native-create-thumbnail';
 import { captureRef } from 'react-native-view-shot';
 import FastImage from 'react-native-fast-image';
 import createStyles from './styles';
+import Mailer from 'react-native-mail';
 
 const { RecordScreen } = NativeModules;
 const recordScreenEvents = new NativeEventEmitter(RecordScreen);
@@ -70,28 +72,10 @@ const FloatingButton = React.memo(
     const [translateY3] = useState(new Animated.Value(0));
     const [screenshotUrls, setScreenshotUrls] = React.useState([]);
     const [thumbnail, setThumbnail] = useState([]);
+    const [textFeedback, setTextFeedback] = useState('')
     const [mergedThumbnails, setMergedThumbnails] = useState(
       [...screenshotUrls, ...thumbnail].filter((item) => !!item)
     );
-
-    const panResponder = useRef(
-      PanResponder.create({
-        onMoveShouldSetPanResponder: () => true,
-        onPanResponderMove: (_, gesture) => {
-          const { dx, dy } = gesture;
-          pan.x.setValue(dx);
-          pan.y.setValue(dy);
-        },
-        onPanResponderRelease: (_, gesture) => {
-          const { dx, dy, moveX, moveY } = gesture;
-          pan.extractOffset();
-          Animated.spring(pan, {
-            toValue: { x: 2, y: 2 },
-            useNativeDriver: false,
-          }).start();
-        },
-      })
-    ).current;
 
     useEffect(() => {
       setScreenshotCount(mergedThumbnails.length);
@@ -177,17 +161,17 @@ const FloatingButton = React.memo(
       const androidEventListener =
         Platform.OS === 'android'
           ? addRecordingEventListener(
-              'RecordingPermissionDenied',
-              handleRecordingEvent
-            )
+            'RecordingPermissionDenied',
+            handleRecordingEvent
+          )
           : null;
 
       const iosEventListener =
         Platform.OS === 'ios'
           ? addRecordingEventListener(
-              'onSessionConnect',
-              handleSessionConnectEvent
-            )
+            'onSessionConnect',
+            handleSessionConnectEvent
+          )
           : null;
 
       return () => {
@@ -200,6 +184,52 @@ const FloatingButton = React.memo(
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    const panResponder = useRef(
+      PanResponder.create({
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderMove: (_, gesture) => {
+          const { dx, dy } = gesture;
+          pan.x.setValue(dx);
+          pan.y.setValue(dy);
+        },
+        onPanResponderRelease: (_, gesture) => {
+          const { dx, dy, moveX, moveY } = gesture;
+          pan.extractOffset();
+          Animated.spring(pan, {
+            toValue: { x: 0, y: 0 },
+            useNativeDriver: false,
+          }).start();
+        },
+      })
+    ).current;
+
+    const sendEmail = () => {
+      const emailSubject = 'Feedback Submission';
+      const emailBody = `
+        Feedback: ${textFeedback}
+      `;
+      const attachments = mergedThumbnails.map((thumbnail, index) => ({
+        path: thumbnail,
+        type: 'png', 
+        name: `screenshot_${index + 1}.png`, 
+      }));
+    
+      Mailer.mail({
+        subject: emailSubject,
+        recipients: ['sumit@memorres.com'], 
+        body: emailBody,
+        isHTML: false,
+        attachment: attachments,
+      }, (error, event) => {
+        if (error) {
+          console.error('Failed to send email:', error);
+        } else {
+          console.log('Email sent successfully');
+        }
+      });
+    };
+    
 
     const handleDeleteItem = (index) => {
       setMergedThumbnails((prevMergedThumbnails) => {
@@ -365,6 +395,12 @@ const FloatingButton = React.memo(
     };
 
     const handleSubmitFeedback = () => {
+
+      if (mergedThumbnails.length === 0 && !textFeedback) {
+        Alert.alert('Cannot submit empty feedback');
+        return;
+      }
+
       setModalVisible(false);
       setScreenshotCount(0);
       setShowScreenShotCount(false);
@@ -372,6 +408,8 @@ const FloatingButton = React.memo(
       setScreenshotUrls([]);
       setMergedThumbnails([]);
       setShowButtons(false);
+
+      sendEmail();
     };
 
     const renderPlusButton = () => {
@@ -576,6 +614,8 @@ const FloatingButton = React.memo(
                   placeholder="Enter your feedback"
                   placeholderTextColor={'#929292'}
                   multiline={true}
+                  value={textFeedback}
+                  onChangeText={setTextFeedback}
                 />
                 <View style={styles.thumbnailView}>
                   <FlatList

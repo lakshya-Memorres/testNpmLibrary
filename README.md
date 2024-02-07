@@ -21,6 +21,7 @@ Ensure you have the required libraries installed:
 npm install react-native-create-thumbnail
 npm install react-native-sound
 npm install react-native-view-shot
+npm i react-native-fast-image
 ```
 On iOS, run:
 ```bash
