@@ -18,10 +18,11 @@ To use this package locally, add the following line to your package.json depende
 Ensure you have the required libraries installed:
 
 ```bash
-npm install react-native-create-thumbnail
-npm install react-native-sound
-npm install react-native-view-shot
+npm i react-native-create-thumbnail
+npm i react-native-sound
+npm i react-native-view-shot
 npm i react-native-fast-image
+npm i react-native-mail
 ```
 On iOS, run:
 ```bash
