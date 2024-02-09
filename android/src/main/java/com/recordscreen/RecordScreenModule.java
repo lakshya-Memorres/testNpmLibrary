@@ -64,9 +64,13 @@ public class RecordScreenModule extends ReactContextBaseJavaModule implements HB
                 if (requestCode == SCREEN_RECORD_REQUEST_CODE) {
                     if (resultCode == Activity.RESULT_OK) {
                           sendEvent("RecordingPermissionDenied", "timer start" );
-                        new CountDownTimer(3000, 1000) { // 3000 milliseconds, 1000 millisecond interval (3-second countdown)
+                        new CountDownTimer(4000, 1000) { // 3000 milliseconds, 1000 millisecond interval (3-second countdown)
                             public void onTick(long millisUntilFinished) {
                                 // You can send countdown updates to React Native if needed
+
+                                long secondsRemaining = millisUntilFinished / 1000;
+                                // Send countdown updates to React Native
+                                sendEvent("CountdownUpdate", String.valueOf(secondsRemaining));
                             }
 
                             public void onFinish() {

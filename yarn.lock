@@ -3264,11 +3264,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*":
-  version: 20.11.16
-  resolution: "@types/node@npm:20.11.16"
+  version: 20.11.17
+  resolution: "@types/node@npm:20.11.17"
   dependencies:
     undici-types: ~5.26.4
-  checksum: 51f0831c1219bf4698e7430aeb9892237bd851deeb25ce23c5bb0ceefcc77c3b114e48f4e98d9fc26def5a87ba9d8079f0281dd37bee691140a93f133812c152
+  checksum: 59c0dde187120adc97da30063c86511664b24b50fe777abfe1f557c217d0a0b84a68aaab5ef8ac44f5c2986b3f9cd605a15fa6e4f31195e594da96bbe9617c20
   languageName: node
   linkType: hard
 
@@ -4350,9 +4350,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001580":
-  version: 1.0.30001584
-  resolution: "caniuse-lite@npm:1.0.30001584"
-  checksum: de7018759561795ef31864b0d1584735eef267033d4e9b5f046b976756e06c43e85afd46705c5d63c63e3c36484c26794c259b9748eefffa582750b4ad0822ce
+  version: 1.0.30001585
+  resolution: "caniuse-lite@npm:1.0.30001585"
+  checksum: c5994f0b5de857349ae0c157a3c61883e800ed154bbeab339aecf01a0a0fd24f67d23ebb48bc995c4c9cde2a281a51b682d1b14bbf2f832f6b2261119f450af4
   languageName: node
   linkType: hard
 
@@ -5470,9 +5470,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.648":
-  version: 1.4.659
-  resolution: "electron-to-chromium@npm:1.4.659"
-  checksum: de66233ea6e3b00d8da3a8ba5242e6fa54e596345f27ac0554c5c8b1cf5f3d20711089b4bb7270a9607e1597153619407c2bdaa13ad944730ce99f17f68d4c5f
+  version: 1.4.664
+  resolution: "electron-to-chromium@npm:1.4.664"
+  checksum: ffb3f0f797f0fe47dcf55f9e4a7dd409df40a0c9e11ced38d952f171ab79188a632fcccce101d876d171bbeb34c92754e4507d83b636c039e89b7acdb7646af7
   languageName: node
   linkType: hard
 
@@ -6586,12 +6586,13 @@ __metadata:
   linkType: hard
 
 "get-symbol-description@npm:^1.0.0":
-  version: 1.0.1
-  resolution: "get-symbol-description@npm:1.0.1"
+  version: 1.0.2
+  resolution: "get-symbol-description@npm:1.0.2"
   dependencies:
     call-bind: ^1.0.5
     es-errors: ^1.3.0
-  checksum: 3feb5130efcade947cbad0304eb2163bab7b80e2c5ce24adcdc242cbdbbbaebbbe0f536807822f333b5d1088288ee19534cb75cd92f18aa76e050ea16e766915
+    get-intrinsic: ^1.2.4
+  checksum: e1cb53bc211f9dbe9691a4f97a46837a553c4e7caadd0488dc24ac694db8a390b93edd412b48dcdd0b4bbb4c595de1709effc75fc87c0839deedc6968f5bd973
   languageName: node
   linkType: hard
 

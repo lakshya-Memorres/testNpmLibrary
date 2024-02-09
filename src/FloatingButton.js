@@ -14,7 +14,6 @@ import {
   FlatList,
   ImageBackground,
   PanResponder,
-  Image,
   Alert,
 } from 'react-native';
 import { Platform } from 'react-native';
@@ -33,7 +32,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const FloatingButton = React.memo(
-  ({ viewShotRef, useMyContext, primaryColor, secondaryColor }) => {
+  ({ viewShotRef, useMyContext, primaryColor, secondaryColor, recipientsEmailId }) => {
     const styles = useMemo(
       () => createStyles(primaryColor, secondaryColor),
       [primaryColor, secondaryColor]
@@ -70,22 +69,13 @@ const FloatingButton = React.memo(
     const [translateY1] = useState(new Animated.Value(0));
     const [translateY2] = useState(new Animated.Value(0));
     const [translateY3] = useState(new Animated.Value(0));
-    const [screenshotUrls, setScreenshotUrls] = React.useState([]);
-    const [thumbnail, setThumbnail] = useState([]);
     const [textFeedback, setTextFeedback] = useState('')
-    const [mergedThumbnails, setMergedThumbnails] = useState(
-      [...screenshotUrls, ...thumbnail].filter((item) => !!item)
-    );
+    const [mediaItems, setMediaItems] = useState([]);
 
     useEffect(() => {
-      setScreenshotCount(mergedThumbnails.length);
-    }, [mergedThumbnails, showButtons]);
-
-    useEffect(() => {
-      setMergedThumbnails((prevMergedThumbnails) => {
-        return [...screenshotUrls, ...thumbnail].filter((item) => !!item);
-      });
-    }, [screenshotUrls, thumbnail, showButtons]);
+      const updatedMergedThumbnails = mediaItems.filter((item) => !!item.path);
+      setScreenshotCount(updatedMergedThumbnails.length);
+    }, [mediaItems, showButtons]);
 
     useEffect(() => {
       if (showButtons) {
@@ -140,11 +130,16 @@ const FloatingButton = React.memo(
         if (eventData === 'true') {
           startRecordingMethod(false);
         } else if (eventData === 'false') {
-          startRecordingMethod(true);
           setShowMainButton(false);
+          startRecordingMethod(true);
         } else if (eventData === 'timer start') {
           setShowMainButton(true);
-        }
+        } else if (eventData === '0') {
+            // setShowMainButton(false)
+            // startRecordingMethod(true);
+        } else (
+          console.log('Countdown Update:', eventData)
+        )
       };
 
       const handleSessionConnectEvent = (event) => {
@@ -166,6 +161,11 @@ const FloatingButton = React.memo(
           )
           : null;
 
+      const countdownEventListener =
+          Platform.OS === 'android'
+            ? addRecordingEventListener('CountdownUpdate', handleRecordingEvent)
+            : null;
+
       const iosEventListener =
         Platform.OS === 'ios'
           ? addRecordingEventListener(
@@ -178,6 +178,9 @@ const FloatingButton = React.memo(
         if (androidEventListener) {
           androidEventListener.remove();
         }
+        if (countdownEventListener) {
+          countdownEventListener.remove();
+        }
         if (iosEventListener) {
           iosEventListener.remove();
         }
@@ -185,9 +188,14 @@ const FloatingButton = React.memo(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const touchThreshold = 20;
     const panResponder = useRef(
       PanResponder.create({
-        onMoveShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponder: (e, gestureState) => {
+          const { dx, dy } = gestureState;
+          return (Math.abs(dx) > touchThreshold) || (Math.abs(dy) > touchThreshold);
+        },
+        // onMoveShouldSetPanResponder: () => true,
         onPanResponderMove: (_, gesture) => {
           const { dx, dy } = gesture;
           pan.x.setValue(dx);
@@ -206,59 +214,60 @@ const FloatingButton = React.memo(
 
     const sendEmail = () => {
       const emailSubject = 'Feedback Submission';
-      const emailBody = `
-        Feedback: ${textFeedback}
-      `;
-      const attachments = mergedThumbnails.map((thumbnail, index) => ({
-        path: thumbnail,
-        type: 'png', 
-        name: `screenshot_${index + 1}.png`, 
-      }));
-    
-      Mailer.mail({
-        subject: emailSubject,
-        recipients: ['sumit@memorres.com'], 
-        body: emailBody,
-        isHTML: false,
-        attachment: attachments,
-      }, (error, event) => {
-        if (error) {
-          console.error('Failed to send email:', error);
-        } else {
-          console.log('Email sent successfully');
-        }
+      const emailBody = textFeedback
+
+      const modifiedAttachments = mediaItems.map((thumbnail, index) => {
+        const path = thumbnail.path.replace("file://", "");
+        const uri = thumbnail.path.replace("file://", "content://appname");
+        return {
+          path,
+          uri,
+          type: thumbnail.type === 'video' ? 'mp4' : 'png',
+        };
       });
+
+      Mailer.mail(
+        {
+          subject: emailSubject,
+          recipients: recipientsEmailId,
+          body: emailBody,
+          isHTML: false,
+          attachments: modifiedAttachments,
+        },
+        (error, event) => {
+          if (error) {
+            console.error('Failed to send email:', error);
+          } else {
+            console.log('Email sent successfully');
+          }
+        }
+      );
     };
-    
 
     const handleDeleteItem = (index) => {
-      setMergedThumbnails((prevMergedThumbnails) => {
-        const updatedThumbnails = [...prevMergedThumbnails];
-        const deletedItem = updatedThumbnails.splice(index, 1)[0];
-        if (screenshotUrls.includes(deletedItem)) {
-          setScreenshotUrls((prevScreenshotUrls) =>
-            prevScreenshotUrls.filter((url) => url !== deletedItem)
-          );
-        } else if (thumbnail.includes(deletedItem)) {
-          setThumbnail((prevThumbnails) =>
-            prevThumbnails.filter((thumb) => thumb !== deletedItem)
-          );
-        }
-        return updatedThumbnails;
+      setMediaItems((prevMediaItems) => {
+        const updatedMediaItems = [...prevMediaItems];
+        updatedMediaItems.splice(index, 1);
+        return updatedMediaItems;
       });
     };
 
+ 
     const captureScreenshot = async () => {
       try {
         const uri = await captureRef(viewShotRef, {
-          format: 'jpg',
+          format: 'png',
           quality: 0.9,
         });
-        setScreenshotUrls((prevUris) => [...prevUris, uri]);
+        setMediaItems((prevMediaItems) => [
+          ...prevMediaItems,
+          { uri, path: uri, type: 'image' },
+        ]);
       } catch (error) {
         console.error('Oops, snapshot failed', error);
       }
     };
+
 
     const soundFile = new Sound(
       'screenshot.mp3',
@@ -274,11 +283,14 @@ const FloatingButton = React.memo(
       try {
         const response = await createThumbnail({
           url: Platform.OS === 'ios' ? path.result.outputURL : `file://${path}`,
-          timeStamp: Platform.OS === 'ios' ? 0 : 1000,
+          timeStamp: Platform.OS === 'ios' ? 2000 : 1500,
           format: 'png',
         });
         if (response?.path) {
-          setThumbnail((prevUris) => [...prevUris, response?.path]);
+          setMediaItems((prevMediaItems) => [
+            ...prevMediaItems,
+            { uri: response.path, path: path, type: 'video' },
+          ]);
         }
       } catch (err) {
         console.error(err);
@@ -391,12 +403,12 @@ const FloatingButton = React.memo(
 
     const handleCloseFeedbackPopup = () => {
       setModalVisible(false);
-      setScreenshotCount(mergedThumbnails.length);
+      setScreenshotCount(mediaItems.length);
     };
 
     const handleSubmitFeedback = () => {
 
-      if (mergedThumbnails.length === 0 && !textFeedback) {
+      if (mediaItems.length === 0 && !textFeedback) {
         Alert.alert('Cannot submit empty feedback');
         return;
       }
@@ -404,11 +416,9 @@ const FloatingButton = React.memo(
       setModalVisible(false);
       setScreenshotCount(0);
       setShowScreenShotCount(false);
-      setThumbnail([]);
-      setScreenshotUrls([]);
-      setMergedThumbnails([]);
+      setMediaItems([])
       setShowButtons(false);
-
+      setTextFeedback('')
       sendEmail();
     };
 
@@ -441,22 +451,23 @@ const FloatingButton = React.memo(
 
     const renderSubButton = () => {
       return (
-        <Animated.View
-          style={[
-            styles.subButtonContainer,
-            {
-              transform: [
-                {
-                  translateY: pan.y.interpolate({
-                    inputRange: [0, 0],
-                    outputRange: [0, 0],
-                    extrapolate: 'clamp',
-                  }),
-                },
-              ],
-            },
-          ]}
-        >
+        // <Animated.View
+        //   style={[
+        //     styles.subButtonContainer,
+        //     {
+        //       transform: [
+        //         {
+        //           translateY: pan.y.interpolate({
+        //             inputRange: [0, 0],
+        //             outputRange: [0, 0],
+        //             extrapolate: 'clamp',
+        //           }),
+        //         },
+        //       ],
+        //     },
+        //   ]}
+        // >
+        <View style={styles.subButtonContainer}>
           <Animated.View
             style={[
               {
@@ -517,7 +528,8 @@ const FloatingButton = React.memo(
               />
             </TouchableOpacity>
           </Animated.View>
-        </Animated.View>
+          {/* </Animated.View> */}
+        </View>
       );
     };
 
@@ -619,17 +631,17 @@ const FloatingButton = React.memo(
                 />
                 <View style={styles.thumbnailView}>
                   <FlatList
-                    data={mergedThumbnails}
+                    data={mediaItems}
                     renderItem={({ item, index }) => {
                       return (
                         <View style={styles.thumbnailContainer}>
                           <ImageBackground
                             style={styles.thumbnailStyle}
                             source={{
-                              uri: item,
+                              uri: item.uri,
                             }}
                           >
-                            {thumbnail.includes(item) && (
+                            {item.type === 'video' && (
                               <View style={styles.playIconOverlay}>
                                 <FastImage
                                   tintColor={secondaryColor}
@@ -705,6 +717,7 @@ const FloatingButton = React.memo(
               ]}
               {...panResponder.panHandlers}
             >
+              {/* <View  style={styles.container}> */}
               {Platform.OS === 'android' &&
                 !startRecording &&
                 !showMainButton &&
@@ -730,7 +743,9 @@ const FloatingButton = React.memo(
                 showRecButtonsIos &&
                 renderIosComponent()}
             </Animated.View>
+            {/* </View> */}
           </View>
+
         )}
       </View>
     );

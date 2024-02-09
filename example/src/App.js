@@ -21,6 +21,7 @@ export default function App() {
       primaryColor = {'#00B5B4'}
       secondaryColor = {'#FFFFFF'}
       viewShotRef={viewShot}
+      recipientsEmailId={['recipient1@example.com', 'recipient2@example.com']}
       />
     </MyProvider>
   );
