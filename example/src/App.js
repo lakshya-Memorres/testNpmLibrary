@@ -1,12 +1,18 @@
 
 import * as React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text} from 'react-native';
 import { FloatingButton, MyProvider, useMyContext } from 'react-native-record-screen';
 import ViewShot from 'react-native-view-shot';
 
 
 export default function App() {
   const viewShot = React.useRef(null);
+
+  const Item = ({title}) => (
+    <View style={styles.item}>
+      <Text style={styles.text}>{title}</Text>
+    </View>
+  );
 
   return (
     <MyProvider>
@@ -21,7 +27,7 @@ export default function App() {
       primaryColor = {'#00B5B4'}
       secondaryColor = {'#FFFFFF'}
       viewShotRef={viewShot}
-      recipientsEmailId={['recipient1@example.com', 'recipient2@example.com']}
+      recipientsEmailId={['lakshya@memorres.com']}
       />
     </MyProvider>
   );
@@ -36,5 +42,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
     alignItems: 'center', 
     backgroundColor: '#eedd82'
-  }
+  },
 });

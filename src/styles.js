@@ -58,11 +58,12 @@ const createStyles = (primaryColor, secondaryColor) => {
       shadowRadius: 3,
     },
     playPauseContainer: {
-      position: 'absolute',
+      // position: 'absolute',
       bottom: 10,
       right: 0,
       backgroundColor: primaryColor,
       borderRadius: 27,
+      // zIndex: 9999999999
     },
     playPauseButton: {
       backgroundColor: primaryColor,
@@ -252,6 +253,9 @@ const createStyles = (primaryColor, secondaryColor) => {
       fontSize: 48,
       fontWeight: 'bold',
     },
+    loadingText: {
+      fontSize: 16,
+    }
   };
 };
 

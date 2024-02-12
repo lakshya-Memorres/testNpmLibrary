@@ -150,6 +150,7 @@
     ]
   },
   "dependencies": {
+    "react-native-compressor": "^1.8.23",
     "react-native-create-thumbnail": "^2.0.0",
     "react-native-fast-image": "^8.6.3",
     "react-native-mail": "^6.1.1",

@@ -2,7 +2,7 @@ import React, {useRef, useEffect, useState, useMemo} from 'react';
 import {View, Animated, Easing, Text} from 'react-native';
 import createStyles from './styles'
 
-const AnimatedLoader = ({primaryColor}) => {
+const AnimatedLoader = ({primaryColor, loadingText}) => {
 
   const styles = useMemo(() => createStyles(primaryColor), [
     primaryColor,
@@ -50,7 +50,7 @@ const AnimatedLoader = ({primaryColor}) => {
       <View style={styles.innerLoaderContainer}>
       <Animated.View style={[styles.loader, {transform: [{rotate: spin}]}]} />
       <View style={styles.textContainer}>
-        <Text style={styles.timerText}>{countdown}</Text>
+        <Text style={loadingText ? styles.loadingText : styles.timerText}>{loadingText ? loadingText : countdown}</Text>
       </View>
       </View>
     </View>

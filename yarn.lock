@@ -10781,6 +10781,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-compressor@npm:^1.8.23":
+  version: 1.8.23
+  resolution: "react-native-compressor@npm:1.8.23"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 46247c11001cafcfe0c4adb86eac6f8cefe6732cedf466fe6e6404a7ee2159e650403f15d1a80cb9f14a426802d3fd349134ecc39f1a2d45ed6c59212f423644
+  languageName: node
+  linkType: hard
+
 "react-native-create-thumbnail@npm:^2.0.0":
   version: 2.0.0
   resolution: "react-native-create-thumbnail@npm:2.0.0"
@@ -10821,6 +10831,7 @@ __metadata:
     pod-install: ^0.1.0
     react: 18.2.0
     react-native: 0.73.2
+    react-native-compressor: ^1.8.23
     react-native-create-thumbnail: ^2.0.0
     react-native-fast-image: ^8.6.3
     react-native-mail: ^6.1.1
@@ -10848,6 +10859,7 @@ __metadata:
     react: 18.2.0
     react-native: 0.73.2
     react-native-builder-bob: ^0.23.2
+    react-native-compressor: ^1.8.23
     react-native-create-thumbnail: ^2.0.0
     react-native-fast-image: ^8.6.3
     react-native-mail: ^6.1.1

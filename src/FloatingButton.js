@@ -24,6 +24,8 @@ import { captureRef } from 'react-native-view-shot';
 import FastImage from 'react-native-fast-image';
 import createStyles from './styles';
 import Mailer from 'react-native-mail';
+import {Video } from 'react-native-compressor';
+
 
 const { RecordScreen } = NativeModules;
 const recordScreenEvents = new NativeEventEmitter(RecordScreen);
@@ -71,6 +73,7 @@ const FloatingButton = React.memo(
     const [translateY3] = useState(new Animated.Value(0));
     const [textFeedback, setTextFeedback] = useState('')
     const [mediaItems, setMediaItems] = useState([]);
+    const [isCompressDone, setIsCompressDone] = useState(false);
 
     useEffect(() => {
       const updatedMergedThumbnails = mediaItems.filter((item) => !!item.path);
@@ -195,7 +198,6 @@ const FloatingButton = React.memo(
           const { dx, dy } = gestureState;
           return (Math.abs(dx) > touchThreshold) || (Math.abs(dy) > touchThreshold);
         },
-        // onMoveShouldSetPanResponder: () => true,
         onPanResponderMove: (_, gesture) => {
           const { dx, dy } = gesture;
           pan.x.setValue(dx);
@@ -225,7 +227,6 @@ const FloatingButton = React.memo(
           type: thumbnail.type === 'video' ? 'mp4' : 'png',
         };
       });
-
       Mailer.mail(
         {
           subject: emailSubject,
@@ -280,16 +281,24 @@ const FloatingButton = React.memo(
     );
 
     const generateThumbnail = async (path) => {
+      setIsCompressDone(true)
       try {
+        const result = await Video.compress(
+          `file://${path}`,
+          {},
+          (progress) => {
+          }
+        );
         const response = await createThumbnail({
           url: Platform.OS === 'ios' ? path.result.outputURL : `file://${path}`,
           timeStamp: Platform.OS === 'ios' ? 2000 : 1500,
           format: 'png',
         });
-        if (response?.path) {
+        if (response?.path && result) {
+          setIsCompressDone(false)
           setMediaItems((prevMediaItems) => [
             ...prevMediaItems,
-            { uri: response.path, path: path, type: 'video' },
+            { uri: response.path, path: result, type: 'video' },
           ]);
         }
       } catch (err) {
@@ -451,22 +460,6 @@ const FloatingButton = React.memo(
 
     const renderSubButton = () => {
       return (
-        // <Animated.View
-        //   style={[
-        //     styles.subButtonContainer,
-        //     {
-        //       transform: [
-        //         {
-        //           translateY: pan.y.interpolate({
-        //             inputRange: [0, 0],
-        //             outputRange: [0, 0],
-        //             extrapolate: 'clamp',
-        //           }),
-        //         },
-        //       ],
-        //     },
-        //   ]}
-        // >
         <View style={styles.subButtonContainer}>
           <Animated.View
             style={[
@@ -528,14 +521,15 @@ const FloatingButton = React.memo(
               />
             </TouchableOpacity>
           </Animated.View>
-          {/* </Animated.View> */}
         </View>
       );
     };
 
-    const renderAndroidComponent = () => {
-      return (
-        <View style={styles.playPauseContainer}>
+    const renderAndroidComponent = () =>  (
+        <View
+        style={
+          styles.playPauseContainer}
+      >
           <View style={styles.playPauseButton}>
             <FastImage
               tintColor={secondaryColor}
@@ -565,9 +559,8 @@ const FloatingButton = React.memo(
               style={styles.smallIconStyle}
             />
           </TouchableOpacity>
-        </View>
+      </View>
       );
-    };
 
     const renderIosComponent = () => {
       return (
@@ -688,8 +681,8 @@ const FloatingButton = React.memo(
 
     return (
       <View>
-        {showMainButton ? (
-          <AnimatedLoader primaryColor={primaryColor} />
+        {showMainButton || isCompressDone? (
+          <AnimatedLoader primaryColor={primaryColor} loadingText={isCompressDone ? "Processing..." : ''} />
         ) : (
           <View>
             {modalVisible && renderFeedbackPopup()}
@@ -717,7 +710,6 @@ const FloatingButton = React.memo(
               ]}
               {...panResponder.panHandlers}
             >
-              {/* <View  style={styles.container}> */}
               {Platform.OS === 'android' &&
                 !startRecording &&
                 !showMainButton &&
@@ -743,7 +735,6 @@ const FloatingButton = React.memo(
                 showRecButtonsIos &&
                 renderIosComponent()}
             </Animated.View>
-            {/* </View> */}
           </View>
 
         )}
