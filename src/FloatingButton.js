@@ -24,7 +24,7 @@ import { captureRef } from 'react-native-view-shot';
 import FastImage from 'react-native-fast-image';
 import createStyles from './styles';
 import Mailer from 'react-native-mail';
-import {Video } from 'react-native-compressor';
+import { Image, Video } from 'react-native-compressor';
 
 
 const { RecordScreen } = NativeModules;
@@ -138,11 +138,12 @@ const FloatingButton = React.memo(
         } else if (eventData === 'timer start') {
           setShowMainButton(true);
         } else if (eventData === '0') {
-            // setShowMainButton(false)
-            // startRecordingMethod(true);
-        } else (
-          console.log('Countdown Update:', eventData)
-        )
+          // setShowMainButton(false)
+          // startRecordingMethod(true);
+        } 
+        // else (
+        //   console.log('Countdown Update:', eventData)
+        // )
       };
 
       const handleSessionConnectEvent = (event) => {
@@ -165,9 +166,9 @@ const FloatingButton = React.memo(
           : null;
 
       const countdownEventListener =
-          Platform.OS === 'android'
-            ? addRecordingEventListener('CountdownUpdate', handleRecordingEvent)
-            : null;
+        Platform.OS === 'android'
+          ? addRecordingEventListener('CountdownUpdate', handleRecordingEvent)
+          : null;
 
       const iosEventListener =
         Platform.OS === 'ios'
@@ -225,6 +226,7 @@ const FloatingButton = React.memo(
           path,
           uri,
           type: thumbnail.type === 'video' ? 'mp4' : 'png',
+          name: 'a'
         };
       });
       Mailer.mail(
@@ -253,17 +255,26 @@ const FloatingButton = React.memo(
       });
     };
 
- 
+
     const captureScreenshot = async () => {
+      setIsCompressDone(true)
       try {
         const uri = await captureRef(viewShotRef, {
           format: 'png',
           quality: 0.9,
         });
-        setMediaItems((prevMediaItems) => [
-          ...prevMediaItems,
-          { uri, path: uri, type: 'image' },
-        ]);
+        const result = await Image.compress(uri, {output : 'png'}, {
+          progressDivider: 10,
+          downloadProgress: (progress) => {
+          }
+        })
+        if (uri && result) {
+          setIsCompressDone(false)
+          setMediaItems((prevMediaItems) => [
+            ...prevMediaItems,
+            { uri, path: result, type: 'image' },
+          ]);
+        }
       } catch (error) {
         console.error('Oops, snapshot failed', error);
       }
@@ -525,42 +536,42 @@ const FloatingButton = React.memo(
       );
     };
 
-    const renderAndroidComponent = () =>  (
-        <View
+    const renderAndroidComponent = () => (
+      <View
         style={
           styles.playPauseContainer}
       >
-          <View style={styles.playPauseButton}>
-            <FastImage
-              tintColor={secondaryColor}
-              source={
-                isPaused ? optimizedImages.video : optimizedImages.recording
-              }
-              style={styles.smallIconStyle}
-            />
-          </View>
-          <TouchableOpacity
-            style={styles.playPauseButton}
-            onPress={handlePlayPause}
-          >
-            <FastImage
-              tintColor={secondaryColor}
-              source={isPaused ? optimizedImages.play : optimizedImages.pause}
-              style={styles.smallIconStyle}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.playPauseButton}
-            onPress={handleStopPress}
-          >
-            <FastImage
-              tintColor={secondaryColor}
-              source={optimizedImages.stop}
-              style={styles.smallIconStyle}
-            />
-          </TouchableOpacity>
+        <View style={styles.playPauseButton}>
+          <FastImage
+            tintColor={secondaryColor}
+            source={
+              isPaused ? optimizedImages.video : optimizedImages.recording
+            }
+            style={styles.smallIconStyle}
+          />
+        </View>
+        <TouchableOpacity
+          style={styles.playPauseButton}
+          onPress={handlePlayPause}
+        >
+          <FastImage
+            tintColor={secondaryColor}
+            source={isPaused ? optimizedImages.play : optimizedImages.pause}
+            style={styles.smallIconStyle}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.playPauseButton}
+          onPress={handleStopPress}
+        >
+          <FastImage
+            tintColor={secondaryColor}
+            source={optimizedImages.stop}
+            style={styles.smallIconStyle}
+          />
+        </TouchableOpacity>
       </View>
-      );
+    );
 
     const renderIosComponent = () => {
       return (
@@ -681,7 +692,7 @@ const FloatingButton = React.memo(
 
     return (
       <View>
-        {showMainButton || isCompressDone? (
+        {showMainButton || isCompressDone ? (
           <AnimatedLoader primaryColor={primaryColor} loadingText={isCompressDone ? "Processing..." : ''} />
         ) : (
           <View>

@@ -23,6 +23,7 @@ npm i react-native-sound
 npm i react-native-view-shot
 npm i react-native-fast-image
 npm i react-native-mail
+npm i react-native-compressor
 ```
 On iOS, run:
 ```bash
