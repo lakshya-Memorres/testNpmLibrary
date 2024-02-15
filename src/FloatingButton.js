@@ -25,6 +25,7 @@ import FastImage from 'react-native-fast-image';
 import createStyles from './styles';
 import Mailer from 'react-native-mail';
 import { Image, Video } from 'react-native-compressor';
+import Share from 'react-native-share';
 
 
 const { RecordScreen } = NativeModules;
@@ -140,7 +141,7 @@ const FloatingButton = React.memo(
         } else if (eventData === '0') {
           // setShowMainButton(false)
           // startRecordingMethod(true);
-        } 
+        }
         // else (
         //   console.log('Countdown Update:', eventData)
         // )
@@ -221,6 +222,7 @@ const FloatingButton = React.memo(
 
       const modifiedAttachments = mediaItems.map((thumbnail, index) => {
         const path = thumbnail.path.replace("file://", "");
+        // const path = thumbnail.path
         const uri = thumbnail.path.replace("file://", "content://appname");
         return {
           path,
@@ -229,6 +231,45 @@ const FloatingButton = React.memo(
           name: 'a'
         };
       });
+      // console.log(' modifiedAttachments.uri', modifiedAttachments.path);
+
+
+      // const shareOptions = {
+      //   title: emailSubject,
+      //   subject: emailSubject,
+      //   message: textFeedback,
+      //   failOnCancel: false,
+      //   urls: mediaItems.map((thumbnail, index) => thumbnail.path) //[images.image1, images.image2],
+      // };
+
+      // If you want, you can use a try catch, to parse
+      // the share response. If the user cancels, etc.
+      // try {
+      //   const ShareResponse = Share.open(shareOptions);
+      //   console.log('thumbnail =>', mediaItems.map((thumbnail, index) => thumbnail.path));
+      //   console.log('Result =>', JSON.stringify(ShareResponse, null, 2));
+      //   // setResult(JSON.stringify(ShareResponse, null, 2));
+      // } catch (error) {
+      //   console.log('Error =>', error);
+      //   setResult('error: '.concat(getErrorString(error)));
+      // }
+
+      // const options = Platform.select({
+      //   default: {
+      //     title: emailSubject,
+      //     subject: emailSubject,
+      //     message: `${emailBody}`,
+      //   },
+      // });
+
+      //     Share.open(options)
+      // .then((res) => {
+      //   console.log(res);
+      // })
+      // .catch((err) => {
+      //   err && console.log(err);
+      // });
+
       Mailer.mail(
         {
           subject: emailSubject,
@@ -263,7 +304,7 @@ const FloatingButton = React.memo(
           format: 'png',
           quality: 0.9,
         });
-        const result = await Image.compress(uri, {output : 'png'}, {
+        const result = await Image.compress(uri, { output: 'png' }, {
           progressDivider: 10,
           downloadProgress: (progress) => {
           }
@@ -292,24 +333,24 @@ const FloatingButton = React.memo(
     );
 
     const generateThumbnail = async (path) => {
-      setIsCompressDone(true)
+      // setIsCompressDone(true)
       try {
-        const result = await Video.compress(
-          `file://${path}`,
-          {},
-          (progress) => {
-          }
-        );
+        // const result = await Video.compress(
+        //   `file://${path}`,
+        //   {},
+        //   (progress) => {
+        //   }
+        // );
         const response = await createThumbnail({
           url: Platform.OS === 'ios' ? path.result.outputURL : `file://${path}`,
           timeStamp: Platform.OS === 'ios' ? 2000 : 1500,
           format: 'png',
-        });
-        if (response?.path && result) {
-          setIsCompressDone(false)
+        });   //response?.path && result
+        if (response?.path) {
+          // setIsCompressDone(false)
           setMediaItems((prevMediaItems) => [
             ...prevMediaItems,
-            { uri: response.path, path: result, type: 'video' },
+            { uri: response.path, path, type: 'video' },
           ]);
         }
       } catch (err) {
@@ -372,10 +413,10 @@ const FloatingButton = React.memo(
       }
       const config = {
         width: 720,
-        height: 1280,
+        height: 480,
         mic: Platform.OS === 'ios' ? true : false,
-        fps: 60,
-        bitrate: 1920 * 1080 * 144,
+        fps: 20,
+        bitrate: 1024000 //236390400 //1920 * 1080 * 144,
       };
       await startRecordingNative(config);
     };
