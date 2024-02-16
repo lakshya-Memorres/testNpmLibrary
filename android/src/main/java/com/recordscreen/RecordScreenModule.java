@@ -77,7 +77,6 @@ public class RecordScreenModule extends ReactContextBaseJavaModule implements HB
                                 sendEvent("RecordingPermissionDenied", String.valueOf(false));
                                 // Start the screen recording after the countdown
                                 hbRecorder.startScreenRecording(intent, resultCode);
-
                             }
                         }.start();
                     } else {

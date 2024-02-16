@@ -14,7 +14,6 @@ import {
   FlatList,
   ImageBackground,
   PanResponder,
-  Alert,
 } from 'react-native';
 import { Platform } from 'react-native';
 import AnimatedLoader from './AnimatedLoader';
@@ -23,12 +22,10 @@ import { createThumbnail } from 'react-native-create-thumbnail';
 import { captureRef } from 'react-native-view-shot';
 import FastImage from 'react-native-fast-image';
 import createStyles from './styles';
-import Mailer from 'react-native-mail';
 import { Image, Video } from 'react-native-compressor';
-import Share from 'react-native-share';
-
 
 const { RecordScreen } = NativeModules;
+const { RNShare } = NativeModules;
 const recordScreenEvents = new NativeEventEmitter(RecordScreen);
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -216,76 +213,23 @@ const FloatingButton = React.memo(
       })
     ).current;
 
-    const sendEmail = () => {
+    const sendEmail = (shareOptionType) => {
       const emailSubject = 'Feedback Submission';
-      const emailBody = textFeedback
 
-      const modifiedAttachments = mediaItems.map((thumbnail, index) => {
-        const path = thumbnail.path.replace("file://", "");
-        // const path = thumbnail.path
-        const uri = thumbnail.path.replace("file://", "content://appname");
-        return {
-          path,
-          uri,
-          type: thumbnail.type === 'video' ? 'mp4' : 'png',
-          name: 'a'
-        };
-      });
-      // console.log(' modifiedAttachments.uri', modifiedAttachments.path);
+      const shareOptions = {
+        social: shareOptionType === 'Email' ? "email" : "slack",
+        title: emailSubject,
+        subject: emailSubject,
+        message: textFeedback,
+        failOnCancel: false,
+        urls: mediaItems.map((thumbnail, index) => thumbnail.path)
+      };
 
-
-      // const shareOptions = {
-      //   title: emailSubject,
-      //   subject: emailSubject,
-      //   message: textFeedback,
-      //   failOnCancel: false,
-      //   urls: mediaItems.map((thumbnail, index) => thumbnail.path) //[images.image1, images.image2],
-      // };
-
-      // If you want, you can use a try catch, to parse
-      // the share response. If the user cancels, etc.
-      // try {
-      //   const ShareResponse = Share.open(shareOptions);
-      //   console.log('thumbnail =>', mediaItems.map((thumbnail, index) => thumbnail.path));
-      //   console.log('Result =>', JSON.stringify(ShareResponse, null, 2));
-      //   // setResult(JSON.stringify(ShareResponse, null, 2));
-      // } catch (error) {
-      //   console.log('Error =>', error);
-      //   setResult('error: '.concat(getErrorString(error)));
-      // }
-
-      // const options = Platform.select({
-      //   default: {
-      //     title: emailSubject,
-      //     subject: emailSubject,
-      //     message: `${emailBody}`,
-      //   },
-      // });
-
-      //     Share.open(options)
-      // .then((res) => {
-      //   console.log(res);
-      // })
-      // .catch((err) => {
-      //   err && console.log(err);
-      // });
-
-      Mailer.mail(
-        {
-          subject: emailSubject,
-          recipients: recipientsEmailId,
-          body: emailBody,
-          isHTML: false,
-          attachments: modifiedAttachments,
-        },
-        (error, event) => {
-          if (error) {
-            console.error('Failed to send email:', error);
-          } else {
-            console.log('Email sent successfully');
-          }
-        }
-      );
+      try {
+        RNShare.shareSingle(shareOptions);  
+      } catch (error) {
+        console.log('Error =>', error);
+      }
     };
 
     const handleDeleteItem = (index) => {
@@ -333,24 +277,24 @@ const FloatingButton = React.memo(
     );
 
     const generateThumbnail = async (path) => {
-      // setIsCompressDone(true)
+      setIsCompressDone(true)
       try {
-        // const result = await Video.compress(
-        //   `file://${path}`,
-        //   {},
-        //   (progress) => {
-        //   }
-        // );
+        const result = await Video.compress(
+          `file://${path}`,
+          {},
+          (progress) => {
+          }
+        );
         const response = await createThumbnail({
           url: Platform.OS === 'ios' ? path.result.outputURL : `file://${path}`,
           timeStamp: Platform.OS === 'ios' ? 2000 : 1500,
           format: 'png',
         });   //response?.path && result
-        if (response?.path) {
-          // setIsCompressDone(false)
+        if (response?.path && result) {
+          setIsCompressDone(false)
           setMediaItems((prevMediaItems) => [
             ...prevMediaItems,
-            { uri: response.path, path, type: 'video' },
+            { uri: response.path, path: result , type: 'video' },
           ]);
         }
       } catch (err) {
@@ -412,11 +356,11 @@ const FloatingButton = React.memo(
         startRecordingMethod(true);
       }
       const config = {
-        width: 720,
-        height: 480,
+        width: 1280,
+        height: 720,
         mic: Platform.OS === 'ios' ? true : false,
-        fps: 20,
-        bitrate: 1024000 //236390400 //1920 * 1080 * 144,
+        fps: 60,
+        bitrate: 236390400 //236390400 //1920 * 1080 * 144,
       };
       await startRecordingNative(config);
     };
@@ -467,12 +411,12 @@ const FloatingButton = React.memo(
       setScreenshotCount(mediaItems.length);
     };
 
-    const handleSubmitFeedback = () => {
+    const handleSubmitFeedback = (shareOptionType) => {
 
-      if (mediaItems.length === 0 && !textFeedback) {
-        Alert.alert('Cannot submit empty feedback');
-        return;
-      }
+      // if (mediaItems.length === 0 && !textFeedback) {
+      //   Alert.alert('Cannot submit empty feedback');
+      //   return;
+      // }
 
       setModalVisible(false);
       setScreenshotCount(0);
@@ -480,7 +424,7 @@ const FloatingButton = React.memo(
       setMediaItems([])
       setShowButtons(false);
       setTextFeedback('')
-      sendEmail();
+      sendEmail(shareOptionType);
     };
 
     const renderPlusButton = () => {
@@ -715,15 +659,27 @@ const FloatingButton = React.memo(
                     numColumns={3}
                   />
                 </View>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '100%'}}>
                 <TouchableOpacity
                   activeOpacity={1}
-                  style={[styles.button, styles.buttonClose]}
+                  style={styles.shareButton}
                   onPress={() => {
-                    handleSubmitFeedback();
+                    handleSubmitFeedback('Email');
                   }}
                 >
-                  <Text style={styles.textStyle}>Submit</Text>
+                  <Text style={styles.textStyle}>Email</Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                  activeOpacity={1}
+                  style={styles.shareButton}
+                  onPress={() => {
+                    handleSubmitFeedback('Slack');
+                  }}
+                >
+                  <Text style={styles.textStyle}>Slack</Text>
+                </TouchableOpacity>
+                </View>
+               
               </View>
             </KeyboardAvoidingView>
           </Modal>

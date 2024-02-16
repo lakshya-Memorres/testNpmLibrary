@@ -172,6 +172,18 @@ const createStyles = (primaryColor, secondaryColor) => {
       backgroundColor: primaryColor,
       width: '100%',
     },
+    shareButton: {
+      borderRadius: 7,
+      padding: 14,
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 1, height: 1 },
+      shadowOpacity: 0.25,
+      shadowRadius: 3,
+      marginBottom: 10,
+      backgroundColor: primaryColor,
+      width: '47%',
+    },
     textStyle: {
       color: secondaryColor,
       fontWeight: 'bold',
@@ -252,9 +264,11 @@ const createStyles = (primaryColor, secondaryColor) => {
     timerText: {
       fontSize: 48,
       fontWeight: 'bold',
+      color: secondaryColor
     },
     loadingText: {
       fontSize: 16,
+      color: secondaryColor
     }
   };
 };
