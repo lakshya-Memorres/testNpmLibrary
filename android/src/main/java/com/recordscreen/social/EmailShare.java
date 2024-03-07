@@ -1,6 +1,9 @@
 package com.recordscreen.social;
 
+import static com.facebook.react.views.textinput.ReactTextInputManager.TAG;
+
 import android.content.ActivityNotFoundException;
+import android.util.Log;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
@@ -17,6 +20,7 @@ public class EmailShare extends SingleShareIntent {
     }
     @Override
     public void open(ReadableMap options) throws ActivityNotFoundException {
+      Log.d(TAG, "emailshare "+options);
         super.open(options);
         //  extra params here
         this.openIntentChooser();

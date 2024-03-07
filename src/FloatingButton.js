@@ -72,8 +72,10 @@ const FloatingButton = React.memo(
     const [textFeedback, setTextFeedback] = useState('')
     const [mediaItems, setMediaItems] = useState([]);
     const [isCompressDone, setIsCompressDone] = useState(false);
+    const [isSlackInstalled, setSlackInstalled] = useState(null);
 
     useEffect(() => {
+      console.log('RNShare', RNShare);
       const updatedMergedThumbnails = mediaItems.filter((item) => !!item.path);
       setScreenshotCount(updatedMergedThumbnails.length);
     }, [mediaItems, showButtons]);
@@ -123,6 +125,17 @@ const FloatingButton = React.memo(
     }, [showButtons, startRecording, translateY3._value]);
 
     useEffect(() => {
+      RNShare.isPackageInstalled('com.Slack').then(isInstalled => {
+        if (isInstalled) {
+          setSlackInstalled(true)
+        } else {
+          setSlackInstalled(false)
+        }
+      }).catch(error => {
+        console.error('Error checking package installation:', error);
+      });
+
+
       const addRecordingEventListener = (eventName, callback) => {
         return recordScreenEvents.addListener(eventName, callback);
       };
@@ -226,7 +239,8 @@ const FloatingButton = React.memo(
       };
 
       try {
-        RNShare.shareSingle(shareOptions);  
+        const response = RNShare.shareSingle(shareOptions);
+        console.log('response =>', response);
       } catch (error) {
         console.log('Error =>', error);
       }
@@ -294,7 +308,7 @@ const FloatingButton = React.memo(
           setIsCompressDone(false)
           setMediaItems((prevMediaItems) => [
             ...prevMediaItems,
-            { uri: response.path, path: result , type: 'video' },
+            { uri: response.path, path: result, type: 'video' },
           ]);
         }
       } catch (err) {
@@ -659,27 +673,28 @@ const FloatingButton = React.memo(
                     numColumns={3}
                   />
                 </View>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '100%'}}>
-                <TouchableOpacity
-                  activeOpacity={1}
-                  style={styles.shareButton}
-                  onPress={() => {
-                    handleSubmitFeedback('Email');
-                  }}
-                >
-                  <Text style={styles.textStyle}>Email</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  activeOpacity={1}
-                  style={styles.shareButton}
-                  onPress={() => {
-                    handleSubmitFeedback('Slack');
-                  }}
-                >
-                  <Text style={styles.textStyle}>Slack</Text>
-                </TouchableOpacity>
+                <View style={styles.shareBtnContainer}>
+                  <TouchableOpacity
+                    activeOpacity={1}
+                    style={[styles.shareButton, !isSlackInstalled && { width: '100%' }]}
+                    onPress={() => {
+                      handleSubmitFeedback('Email');
+                    }}
+                  >
+                    <Text style={styles.textStyle}>Email</Text>
+                  </TouchableOpacity>
+                  {isSlackInstalled && (
+                    <TouchableOpacity
+                      activeOpacity={1}
+                      style={styles.shareButton}
+                      onPress={() => {
+                        handleSubmitFeedback('Slack');
+                      }}
+                    >
+                      <Text style={styles.textStyle}>Slack</Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
-               
               </View>
             </KeyboardAvoidingView>
           </Modal>

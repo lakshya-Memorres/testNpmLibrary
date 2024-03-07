@@ -182,7 +182,13 @@ const createStyles = (primaryColor, secondaryColor) => {
       shadowRadius: 3,
       marginBottom: 10,
       backgroundColor: primaryColor,
+      height: 50,
       width: '47%',
+    },
+    shareBtnContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '100%'
     },
     textStyle: {
       color: secondaryColor,

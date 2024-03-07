@@ -104,7 +104,6 @@ public class RNShareImpl implements ActivityEventListener {
     }
 
     public void shareSingle(ReadableMap options, Promise promise) {
-      Log.d(TAG, "shareSingle log ===>>" + options);
         TargetChosenReceiver.registerCallbacks(promise);
         if (ShareIntent.hasValidKey("social", options)) {
             try {
@@ -119,7 +118,6 @@ public class RNShareImpl implements ActivityEventListener {
                 ex.printStackTrace(System.out);
                 TargetChosenReceiver.callbackReject(ex.getMessage());
             } catch (Exception e) {
-                Log.e(NAME,e.getMessage());
                 e.printStackTrace(System.out);
                 TargetChosenReceiver.callbackReject(e.getMessage());
             }
@@ -131,8 +129,10 @@ public class RNShareImpl implements ActivityEventListener {
     public void isPackageInstalled(String packagename, Promise promise) {
         try {
             boolean res = ShareIntent.isPackageInstalled(packagename, RCTContext);
+          Log.d(TAG, "isPackageInstalled: "+ res);
             promise.resolve(res);
         } catch (Exception e) {
+          Log.d(TAG, "isPackageInstalled catch: "+e.getMessage());
             Log.e(NAME,e.getMessage());
             promise.reject(e.getMessage());
         }

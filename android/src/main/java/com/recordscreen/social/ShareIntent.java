@@ -247,7 +247,7 @@ public abstract class ShareIntent {
 
     protected Intent[] getIntentsToViewFile(Intent intent, Uri uri) {
         PackageManager pm = this.reactContext.getPackageManager();
-
+      Log.d(TAG, "getIntentsToViewFile: "+pm);
         List<ResolveInfo> resInfo = pm.queryIntentActivities(intent, 0);
         Intent[] extraIntents = new Intent[resInfo.size()];
         for (int i = 0; i < resInfo.size(); i++) {
